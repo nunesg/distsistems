@@ -5,11 +5,13 @@ import java.io.ObjectInputStream;
 
 import com.proto.CommonMessage;
 
-public class CustomerApp {
+public class AdminApp {
+  private static final int PORT_NUMBER = 12340;
+
   public static void main(String[] args) {
 
     try {
-      Socket server = new Socket("localhost", 12345);
+      Socket server = new Socket("localhost", PORT_NUMBER);
       System.out.println("Message received: " + CommonMessage.parseFrom(server.getInputStream()).getContent());
       server.close();
     } catch (Exception e) {
