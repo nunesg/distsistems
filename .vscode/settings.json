@@ -1,0 +1,6 @@
+{
+  "java.project.sourcePaths": [
+    "java_test/examples/java-tutorial/src/main/java",
+    "main_project/src/main/java"
+  ]
+}
