@@ -3,7 +3,9 @@ package com.server;
 import java.net.*;
 import java.io.ObjectOutputStream;
 
-public class ClientServer {
+import com.proto.CommonMessage;
+
+public class CustomerPortal {
   public static void main(String[] args) {
 
     try {
@@ -15,11 +17,7 @@ public class ClientServer {
         while (true) {
           Socket client = server.accept();
           System.out.println("Client connected on port 12345!");
-
-          ObjectOutputStream stream = new ObjectOutputStream(client.getOutputStream());
-          stream.flush();
-          stream.writeObject("Hi client!");
-          stream.close();
+          CommonMessage.newBuilder().setContent("Hi client!").build().writeTo(client.getOutputStream());
           client.close();
         }
       } catch (Exception e) {
