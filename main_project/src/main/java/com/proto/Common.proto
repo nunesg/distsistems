@@ -7,6 +7,6 @@ option java_package = "com.proto";
 option java_outer_classname = "TestProto";
 
 message CommonMessage {
-  optional string content = 1;
+  string content = 1;
 }
 
