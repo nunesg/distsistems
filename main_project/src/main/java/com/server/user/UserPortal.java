@@ -5,7 +5,7 @@ import java.io.ObjectOutputStream;
 
 import com.proto.CommonMessage;
 
-public class CustomerPortal {
+public class UserPortal {
   private static final int PORT_NUMBER = 12345;
 
   public static void main(String[] args) {
@@ -19,7 +19,7 @@ public class CustomerPortal {
         while (true) {
           Socket client = server.accept();
           System.out.println("Client connected on port " + PORT_NUMBER + "!");
-          CommonMessage.newBuilder().setContent("Hi customer!").build().writeTo(client.getOutputStream());
+          CommonMessage.newBuilder().setContent("Hi user!").build().writeTo(client.getOutputStream());
           client.close();
         }
       } catch (Exception e) {

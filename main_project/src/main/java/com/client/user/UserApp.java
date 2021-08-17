@@ -5,7 +5,7 @@ import java.io.ObjectInputStream;
 
 import com.proto.CommonMessage;
 
-public class CustomerApp {
+public class UserApp {
   private static final int PORT_NUMBER = 12345;
 
   public static void main(String[] args) {

@@ -1,8 +1,8 @@
 load("@rules_java//java:defs.bzl", "java_binary")
 
 java_binary(
-    name = "app",
-    srcs = ["CustomerApp.java"],
-    main_class = "com.client.CustomerApp",
+    name = "portal",
+    srcs = ["UserPortal.java"],
+    main_class = "com.server.UserPortal",
     deps = ["//src/main/java/com/proto:common_java_proto"],
 )
