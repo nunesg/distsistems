@@ -1,11 +1,11 @@
-package com.server;
+package cloudnotes.server;
 
 import java.net.*;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-import com.proto.CommonMessage;
-import com.server.CacheManager;
+import cloudnotes.proto.CommonMessage;
+import cloudnotes.server.CacheManager;
 
 public class UserPortal {
   private static final int PORT_NUMBER = 12345;

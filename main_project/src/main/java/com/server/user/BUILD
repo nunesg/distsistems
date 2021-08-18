@@ -4,5 +4,8 @@ java_binary(
     name = "portal",
     srcs = ["UserPortal.java"],
     main_class = "com.server.UserPortal",
-    deps = ["//src/main/java/com/proto:common_java_proto"],
+    deps = [
+        "//src/main/java/com/proto:common_java_proto",
+        "//src/main/java/com/server:cache_manager",
+    ],
 )

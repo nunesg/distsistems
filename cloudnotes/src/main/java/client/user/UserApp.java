@@ -1,10 +1,10 @@
-package com.client;
+package cloudnotes.client;
 
 import java.net.*;
 import java.time.LocalTime;
 import java.io.ObjectInputStream;
 
-import com.proto.CommonMessage;
+import cloudnotes.proto.CommonMessage;
 
 public class UserApp {
   private static final int PORT_NUMBER = 12345;
