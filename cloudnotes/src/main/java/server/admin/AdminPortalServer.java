@@ -2,15 +2,9 @@ package cloudnotes.server;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-import io.grpc.stub.StreamObserver;
 import java.net.*;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-
-import cloudnotes.proto.AdminPortalGrpc;
-import cloudnotes.proto.AdminPortalGrpc.AdminPortalBlockingStub;
-import cloudnotes.proto.HelloRequest;
-import cloudnotes.proto.HelloReply;
 
 public class AdminPortalServer {
   private static final int PORT_NUMBER = 12340;
@@ -29,7 +23,7 @@ public class AdminPortalServer {
 
   public void start() throws IOException {
     server.start();
-    System.out.println("Listening on port " + this.port);
+    System.out.println("AdminPortalServer listening on port " + this.port);
   }
 
   public void stop() throws InterruptedException {
@@ -49,15 +43,4 @@ public class AdminPortalServer {
     portalAdminServer.start();
     portalAdminServer.blockUntilShutdown();
   }
-
-  private static class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
-    @Override
-    public void sayHello(HelloRequest request, StreamObserver<HelloReply> responseObserver) {
-      System.out.println("get request from " + request.getName());
-      HelloReply reply = HelloReply.newBuilder().setMessage("Hello " + request.getName() + "!").build();
-      responseObserver.onNext(reply);
-      responseObserver.onCompleted();
-    }
-  }
-
 }

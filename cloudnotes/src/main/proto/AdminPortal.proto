@@ -2,18 +2,56 @@ syntax = "proto3";
 
 package cloudnotes.proto;
 
+import "Common.proto";
+
 option java_multiple_files = true;
 option java_package = "cloudnotes.proto";
 option java_outer_classname = "AdminPortalProto";
 
 service AdminPortal {
-  rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc talk (stream CommonMessage) returns (stream CommonMessage) {}
+  rpc getValidId (EmptyMessage) returns (UserId) {}
+  
+  rpc createUser (User) returns (OperationStatus) {}
+  // rpc updateUser (User) returns (OperationStatus) {}
+  
+  // rpc getUser (UserId) returns (User) {}
+  // rpc getAllUsers (EmptyMessage) returns (UsersCollection) {}
+  
+  // rpc deleteUser (UserId) returns (OperationStatus) {}
 }
 
+message EmptyMessage {}
+
 message HelloRequest {
-  string name = 1;
+  string message = 1;
 }
 
 message HelloReply {
   string message = 1;
+}
+
+message OperationStatus {
+  enum StatusType {
+    SUCCESS = 0;
+    FAILED = 1;
+  }
+  StatusType type = 1;
+}
+
+message UserData {
+  string name = 1;
+}
+
+message UserId {
+  int32 value = 1;
+}
+
+message User {
+  UserData data = 1;
+  UserId id = 2;
+}
+
+message UsersCollection {
+  repeated User values = 1;
 }
