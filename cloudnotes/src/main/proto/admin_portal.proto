@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package cloudnotes.proto;
 
-import "Common.proto";
+import "common.proto";
 
 option java_multiple_files = true;
 option java_package = "cloudnotes.proto";
@@ -13,15 +13,13 @@ service AdminPortal {
   rpc getValidId (EmptyMessage) returns (UserId) {}
   
   rpc createUser (User) returns (OperationStatus) {}
-  // rpc updateUser (User) returns (OperationStatus) {}
+  rpc updateUser (User) returns (OperationStatus) {}
   
-  // rpc getUser (UserId) returns (User) {}
-  // rpc getAllUsers (EmptyMessage) returns (UsersCollection) {}
+  rpc getUser (UserId) returns (User) {}
+  rpc getAllUsers (EmptyMessage) returns (UsersCollection) {}
   
-  // rpc deleteUser (UserId) returns (OperationStatus) {}
+  rpc deleteUser (UserId) returns (OperationStatus) {}
 }
-
-message EmptyMessage {}
 
 message HelloRequest {
   string message = 1;
@@ -29,14 +27,6 @@ message HelloRequest {
 
 message HelloReply {
   string message = 1;
-}
-
-message OperationStatus {
-  enum StatusType {
-    SUCCESS = 0;
-    FAILED = 1;
-  }
-  StatusType type = 1;
 }
 
 message UserData {

@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package cloudnotes.proto;
+
+import "common.proto";
+
+option java_multiple_files = true;
+option java_package = "cloudnotes.proto";
+option java_outer_classname = "UserPortalProto";
+
+service UserPortal {
+  rpc createNote(Note) returns (OperationStatus) {}
+  rpc modifyNote(Note) returns (OperationStatus) {}
+  rpc deleteNote(NoteId) returns (OperationStatus) {}
+  rpc getNote(NoteId) returns (Note) {}
+  rpc getAllNotes(EmptyMessage) returns (NotesCollection) {}
+}
+
+message NoteId {
+  int32 value = 1;
+}
+
+message NoteContent {
+  string title = 1;
+  string body = 2;
+}
+
+message Note {
+  NoteId id = 1;
+  NoteContent content = 2;
+}
+
+message NotesCollection {
+  repeated Note values = 1;
+}

@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package cloudnotes.proto;
+
+option java_multiple_files = true;
+option java_package = "cloudnotes.proto";
+option java_outer_classname = "CommonProto";
+
+message EmptyMessage {}
+
+message CommonMessage {
+  string content = 1;
+}
+
+message OperationStatus {
+  enum StatusType {
+    SUCCESS = 0;
+    FAILED = 1;
+  }
+  StatusType type = 1;
+}
