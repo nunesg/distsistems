@@ -1,7 +1,8 @@
 {
   "protoc": {
+    "path": "/usr/local/bin/protoc",
     "options": [
-      "--proto_path=src/main/proto"
+      "--proto_path=/home/gustavo/Documents/UFU/SD/projects/cloudnotes/src/main/proto/",
     ]
   }
 }

@@ -7,6 +7,7 @@ import cloudnotes.proto.EmptyMessage;
 import cloudnotes.proto.OperationStatus;
 import cloudnotes.proto.User;
 import cloudnotes.proto.UserId;
+import cloudnotes.proto.UsersCollection;
 
 import io.grpc.stub.StreamObserver;
 import java.util.Scanner;
@@ -19,31 +20,6 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
     }
 
     @Override
-    public StreamObserver<CommonMessage> talk(StreamObserver<CommonMessage> responseObserver) {
-      return new StreamObserver<CommonMessage>() {
-        @Override
-        public void onNext(CommonMessage msg) {
-          System.out.println("Message received: " + msg.getContent());
-          if (msg.getContent().equals("stop")) return;
-          Scanner in = new Scanner(System.in);
-          responseObserver.onNext(CommonMessage.newBuilder().setContent(in.nextLine()).build());
-        }
-        
-        @Override
-        public void onError(Throwable t) {
-
-        }
-
-        @Override
-        public void onCompleted() {
-          System.out.println("Finished reading inputs from client.");
-          // responseObserver.onNext(CommonMessage.newBuilder().setContent("Thanks for the talk!").build());
-          responseObserver.onCompleted();
-        }
-      };
-    }
-
-    @Override
     public void getValidId(EmptyMessage emptyRequest, StreamObserver<UserId> responseObserver) {
       System.out.println("getValidId request");
       responseObserver.onNext(userIdManager.createId());
@@ -52,32 +28,57 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
 
     @Override
     public void createUser(User userRequest, StreamObserver<OperationStatus> responseObserver) {
-      System.out.println("getCreateUser request");
-      OperationStatus.Builder statusBuilder = OperationStatus.newBuilder();
-      if (isNewIdValid(userRequest.getId()) && userRequest.hasData()) {
-        insertUser(userRequest);
-        statusBuilder.setType(OperationStatus.StatusType.SUCCESS);
-      } else {
-        statusBuilder.setType(OperationStatus.StatusType.FAILED);
-      }
-
-      responseObserver.onNext(statusBuilder.build());
+      System.out.println("createUser request");
+      responseObserver.onNext(
+        OperationStatus.newBuilder()
+          .setType(OperationStatus.StatusType.SUCCESS)
+          .build());
       responseObserver.onCompleted();
     }
 
-    // rpc updateUser (User) returns (OperationStatus) {}
-    
-    // rpc getUser (UserId) returns (User) {}
-    // rpc getAllUsers (EmptyMessage) returns (UsersCollection) {}
-    
-    // rpc deleteUser (UserId) returns (OperationStatus) {}
-
-
-    private boolean isNewIdValid(UserId id) {
-      return userIdManager.getLastId().getValue() == id.getValue();
+    @Override
+    public void updateUser(User userRequest, StreamObserver<OperationStatus> responseObserver) {
+      System.out.println("updateUser request");
+      OperationStatus status = OperationStatus.newBuilder()
+        .setType(OperationStatus.StatusType.SUCCESS)
+        .build();
+      responseObserver.onNext(status);
+      responseObserver.onCompleted();
     }
 
-    private void insertUser(User user) {
-      System.out.println("User inserted!");
+    @Override
+    public void deleteUser(UserId userIdRequest, StreamObserver<OperationStatus> responseObserver) {
+      System.out.println("deleteUser request");
+      responseObserver.onNext(
+        OperationStatus.newBuilder()
+          .setType(OperationStatus.StatusType.SUCCESS)
+          .build());
+      responseObserver.onCompleted();
+    }
+    
+    @Override
+    public void getUser(UserId userIdRequest, StreamObserver<User> responseObserver) {
+      System.out.println("getUser request");
+      responseObserver.onNext(
+        User.newBuilder()
+          .setId(
+            UserId.newBuilder()
+              .setValue(userIdRequest.getValue())
+              .build())
+          .build());
+      responseObserver.onCompleted();
+    }
+    
+    @Override
+    public void getAllUsers(EmptyMessage emptyReq, StreamObserver<UsersCollection> responseObserver) {
+      System.out.println("getAllUsers request");
+      responseObserver.onNext(
+        UsersCollection.newBuilder()
+          .addValues(
+            User.newBuilder().build())
+          .addValues(
+            User.newBuilder().build())
+          .build());
+      responseObserver.onCompleted();
     }
   }
