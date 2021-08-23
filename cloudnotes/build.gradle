@@ -85,7 +85,7 @@ task userClient(type: CreateStartScripts) {
 }
 
 task userServer(type: CreateStartScripts) {
-    mainClassName = 'cloudnotes.server.UserPortal'
+    mainClassName = 'cloudnotes.server.UserPortalServer'
     applicationName = 'user-server'
     outputDir = new File(project.buildDir, 'tmp')
     classpath = startScripts.classpath

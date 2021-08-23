@@ -8,12 +8,33 @@ option java_multiple_files = true;
 option java_package = "cloudnotes.proto";
 option java_outer_classname = "UserPortalProto";
 
-service UserPortal {
-  rpc createNote(Note) returns (OperationStatus) {}
-  rpc modifyNote(Note) returns (OperationStatus) {}
-  rpc deleteNote(NoteId) returns (OperationStatus) {}
-  rpc getNote(NoteId) returns (Note) {}
-  rpc getAllNotes(EmptyMessage) returns (NotesCollection) {}
+// service UserPortal {
+//   rpc createNote(Note) returns (OperationStatus) {}
+//   rpc modifyNote(Note) returns (OperationStatus) {}
+//   rpc deleteNote(NoteId) returns (OperationStatus) {}
+//   rpc getNote(NoteId) returns (Note) {}
+//   rpc getAllNotes(EmptyMessage) returns (NotesCollection) {}
+// }
+
+message NotesRequest {
+  enum RequestType {
+    UNKNOWN = 0;
+    CREATE = 1;   // create note
+    UPDATE = 2;   // update existing note
+    DELETE = 3;   // delete existing note
+    GET = 4;      // get note
+    GET_ALL = 5;  // get all notes
+  }
+  RequestType type = 1;
+  Note note = 2; // used by CREATE and UPDATE
+  NoteId noteId = 3; // used by GET and DELETE
+  UserId user = 4; // used to identify the user
+}
+
+message NotesResponse {
+  NotesRequest.RequestType type = 1;
+  OperationStatus status = 2;
+  repeated Note values = 3;
 }
 
 message NoteId {
@@ -28,8 +49,4 @@ message NoteContent {
 message Note {
   NoteId id = 1;
   NoteContent content = 2;
-}
-
-message NotesCollection {
-  repeated Note values = 1;
 }

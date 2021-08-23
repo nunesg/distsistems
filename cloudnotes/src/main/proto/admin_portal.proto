@@ -20,28 +20,3 @@ service AdminPortal {
   
   rpc deleteUser (UserId) returns (OperationStatus) {}
 }
-
-message HelloRequest {
-  string message = 1;
-}
-
-message HelloReply {
-  string message = 1;
-}
-
-message UserData {
-  string name = 1;
-}
-
-message UserId {
-  int32 value = 1;
-}
-
-message User {
-  UserData data = 1;
-  UserId id = 2;
-}
-
-message UsersCollection {
-  repeated User values = 1;
-}
