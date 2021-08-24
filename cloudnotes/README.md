@@ -36,13 +36,17 @@ First, build all targets using:
 The binaries will be located at `build/install/cloudnotes/bin/`.
 
 ## Servers
+
+First, start mosquitto broker on port `2222` running:
+- `mosquitto -p 2222` on a terminal.
+
 On the terminal, run:
 - `./build/install/cloudnotes/bin/user-server` to start the `UserPortal` application.
-- `./build/install/cloudnotes/bin/admin-server` to start the `AdminPortal` application.
+- `./build/install/cloudnotes/bin/admin-server -p <server_port>` to start the `AdminPortal` application running on port `<server_port>`.
 
 ## Client
-After running the server, open another terminal and run:
+After setting up the server, open another terminal and run:
 - `./build/install/cloudnotes/bin/user-client` to start the `UserApp` application.
-- `./build/install/cloudnotes/bin/admin-client` to start the `AdminApp` application.
+- `./build/install/cloudnotes/bin/admin-client -p <server_port>` to start the `AdminApp` application, which will communicate with server running on port `<server_port>`.
 
 The applications on client side (`UserApp` and `AdminApp`) should print on the screen the message received from the respective server.
