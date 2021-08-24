@@ -8,13 +8,13 @@ import cloudnotes.proto.NotesRequest;
 import cloudnotes.proto.NotesRequest.RequestType;
 import cloudnotes.proto.NotesResponse;
 import cloudnotes.proto.OperationStatus;
-import cloudnotes.server.CacheManager;
+import cloudnotes.server.NotesCacheInterface;
 
 public class UserRequestHandler {
-  private final CacheManager cacheManager;
+  private final NotesCacheInterface cacheManager;
 
-  public UserRequestHandler() {
-    cacheManager = new CacheManager();
+  public UserRequestHandler(NotesCacheInterface cacheManager) {
+    this.cacheManager = cacheManager;
   }
 
   public NotesResponse handle(NotesRequest request) {

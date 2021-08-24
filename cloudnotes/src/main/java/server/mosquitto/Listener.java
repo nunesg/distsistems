@@ -14,6 +14,8 @@
 
 package cloudnotes.server.mosquitto;
 
+import java.util.HashMap;
+
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -22,104 +24,60 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import cloudnotes.server.ListenerCallback;
+
 /**
  * The Class Listner.
  * 
  * @author Yasith Lokuge
  */
 public class Listener implements MqttCallback {
+  private static final String brokerUrl = "tcp://localhost:2222";
+  private String clientId;
+  private MqttClient client;
+  private HashMap<String, ListenerCallback> callbacks;
 
-	/** The broker url. */
-	private static final String brokerUrl = "tcp://localhost:2222";
+  public Listener(String id) {
+    try {
+      this.clientId = id;
+      this.callbacks = new HashMap<String, ListenerCallback>();
+      client = new MqttClient(brokerUrl, clientId, new MemoryPersistence());
+      MqttConnectOptions connOpts = new MqttConnectOptions();
+      connOpts.setCleanSession(true);
 
-	/** The client id. */
-	private static final String clientId = "JavaSample";
+      System.out.println("Creating listener: " + clientId);
 
-	/** The topic. */
-	private static final String topic = "Temperature";
+      System.out.println("Mqtt Connecting to broker: " + brokerUrl);
+      client.connect(connOpts);
+      System.out.println("Mqtt Connected");
 
-	/**
-	 * The main method.
-	 *
-	 * @param args
-	 *            the arguments
-	 */
-	public static void main(String[] args) {
+      client.setCallback(this);
+    } catch (MqttException e) {
+      System.out.println("Exception while constructing listener: " + e.getMessage());
+      e.printStackTrace();
+    }
+  }
 
-		new Listener().subscribe(topic);
-	}
-
-	/**
-	 * Subscribe.
-	 *
-	 * @param topic
-	 *            the topic
-	 */
-	public void subscribe(String topic) {
-
-		MemoryPersistence persistence = new MemoryPersistence();
-
+	public void subscribe(String topic, ListenerCallback callback) {
+    System.out.println("Subscribing to topic: " + topic);
 		try {
-
-			MqttClient sampleClient = new MqttClient(brokerUrl, clientId, persistence);
-			MqttConnectOptions connOpts = new MqttConnectOptions();
-			connOpts.setCleanSession(true);
-
-			System.out.println("checking");
-
-			System.out.println("Mqtt Connecting to broker: " + brokerUrl);
-			sampleClient.connect(connOpts);
-			System.out.println("Mqtt Connected");
-
-			sampleClient.setCallback(this);
-			sampleClient.subscribe(topic);
-
+			client.subscribe(topic);
+      callbacks.put(topic, callback);
 			System.out.println("Subscribed");
-			System.out.println("Listening");
-
-		} catch (MqttException me) {
-
-			System.out.println("Mqtt reason " + me.getReasonCode());
-			System.out.println("Mqtt msg " + me.getMessage());
-			System.out.println("Mqtt loc " + me.getLocalizedMessage());
-			System.out.println("Mqtt cause " + me.getCause());
-			System.out.println("Mqtt excep " + me);
+		} catch (Exception e) {
+      System.out.println("Exception while subscribing to topic " + topic + ". Message: " + e.toString());
+      e.printStackTrace();
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.paho.client.mqttv3.MqttCallback#connectionLost(java.lang.
-	 * Throwable)
-	 */
-	public void connectionLost(Throwable arg0) {
+	public void connectionLost(Throwable arg0) {}
 
-	}
+	public void deliveryComplete(IMqttDeliveryToken arg0) {}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.paho.client.mqttv3.MqttCallback#deliveryComplete(org.eclipse.
-	 * paho.client.mqttv3.IMqttDeliveryToken)
-	 */
-	public void deliveryComplete(IMqttDeliveryToken arg0) {
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.paho.client.mqttv3.MqttCallback#messageArrived(java.lang.
-	 * String, org.eclipse.paho.client.mqttv3.MqttMessage)
-	 */
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
-
-		System.out.println("Mqtt topic : " + topic);
+    System.out.println("Mqtt topic : " + topic);
 		System.out.println("Mqtt msg : " + message.toString());
+    callbacks.get(topic).run(message.getPayload());
 	}
 
 }

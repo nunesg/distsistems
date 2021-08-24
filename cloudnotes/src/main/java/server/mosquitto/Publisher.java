@@ -13,57 +13,57 @@
  ******************************************************************************/
 package cloudnotes.server.mosquitto;
 
+import java.lang.AutoCloseable;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+public class Publisher implements AutoCloseable {
+  private final String brokerUrl = "tcp://localhost:2222";
+  private String clientId;
+  private MqttClient client;
 
-/**
- * The Class Publisher.
- * @author Yasith Lokuge
- */
-public class Publisher {
+  public Publisher(String id) {
+    try {
+      this.clientId = id;
+      this.client = new MqttClient(brokerUrl, clientId, new MemoryPersistence());
+      MqttConnectOptions connOpts = new MqttConnectOptions();
+      connOpts.setCleanSession(true);
 
-	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 */
-	public static void main(String[] args) {
+      System.out.println("Creating publisher: " + clientId);
+      System.out.println("Connecting to broker: " + brokerUrl);
+      client.connect(connOpts);
+      System.out.println("Connected");
+    } catch (MqttException e) {
+      System.out.println("Exception on publisher constructor: " + e.getMessage());
+      e.printStackTrace();
+    }
+  }
 
-		String topic = "Temperature";
-		String content = "32";
-		int qos = 2;
-		String broker = "tcp://localhost:2222";
-		String clientId = "JavaSamplePub";
-		MemoryPersistence persistence = new MemoryPersistence();
+  public void publish(String topic, byte[] message) {
+    publish(topic, message, 2);
+  }
 
-		try {
-			
-			MqttClient sampleClient = new MqttClient(broker, clientId, persistence);
-			MqttConnectOptions connOpts = new MqttConnectOptions();
-			connOpts.setCleanSession(true);
-			System.out.println("Connecting to broker: " + broker);
-			sampleClient.connect(connOpts);
-			System.out.println("Connected");
-			System.out.println("Publishing message: " + content);
-			MqttMessage message = new MqttMessage(content.getBytes());
-			message.setQos(qos);
-			sampleClient.publish(topic, message);
-			System.out.println("Message published");
-			sampleClient.disconnect();
-			System.out.println("Disconnected");
-						
-		} catch (MqttException me) {
-			System.out.println("reason " + me.getReasonCode());
-			System.out.println("msg " + me.getMessage());
-			System.out.println("loc " + me.getLocalizedMessage());
-			System.out.println("cause " + me.getCause());
-			System.out.println("excep " + me);
-			me.printStackTrace();
-			
-		}
-	}
+  public void publish(String topic, byte[] msg, int qos) {
+    try{
+      MqttMessage message = new MqttMessage(msg);
+      message.setQos(qos);
+      client.publish(topic, message);
+      System.out.println("Message: {" + message.toString() + "} published");
+    } catch (MqttException e) {
+      System.out.println("Exception while publishing: " + e.getMessage());
+      e.printStackTrace();
+    }
+  }
+
+  public void close() {
+    try {
+      client.disconnect();
+		  System.out.println("Disconnected");
+    } catch (MqttException e) {
+      System.out.println("Error trying to disconnect client.");
+    }
+  }
 }

@@ -42,3 +42,7 @@ message Note {
   NoteId id = 1;
   NoteContent content = 2;
 }
+
+message NotesCollection {
+  repeated Note notes = 1;
+}

@@ -5,12 +5,13 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import cloudnotes.proto.NotesRequest;
+import cloudnotes.server.NotesCacheManager;
 
 public class UserPortalServer {
   private static final int PORT_NUMBER = 12345;
 
   public static void main(String[] args) {
-    UserRequestHandler requestHandler = new UserRequestHandler();
+    UserRequestHandler requestHandler = new UserRequestHandler(new NotesCacheManager());
 
     try {
       ServerSocket server = new ServerSocket(PORT_NUMBER);

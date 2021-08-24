@@ -6,6 +6,8 @@ import java.net.*;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+import cloudnotes.server.UsersCacheManager;
+
 public class AdminPortalServer {
   private static final int PORT_NUMBER = 12340;
 
@@ -18,7 +20,10 @@ public class AdminPortalServer {
 
   public AdminPortalServer(ServerBuilder<?> serverBuilder, int port) {
     this.port = port;
-    this.server = serverBuilder.addService(new AdminPortalService()).build();
+    this.server = serverBuilder
+      .addService(
+        new AdminPortalService(new UsersCacheManager()))
+      .build();
   }
 
   public void start() throws IOException {
