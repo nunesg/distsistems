@@ -3,15 +3,16 @@ package cloudnotes.client;
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import java.util.Scanner;
 
 public class AdminClient {
-  private static final int PORT_NUMBER = 12340;
-  private static final String HOST_ADDRESS = "localhost";
-  private static final String TARGET = HOST_ADDRESS + ":" + PORT_NUMBER;
+  private static int port;
+  private static String host = "localhost";
 
-  public static void main(String[] args) {
-    
-    ManagedChannel channel = ManagedChannelBuilder.forTarget(TARGET).usePlaintext().build();
+  public static void main(String args[]) {
+    int port = new Scanner(args[1]).nextInt();
+    String target = host+":"+port;
+    ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
     Admin admin = new Admin(channel);
 
     try {

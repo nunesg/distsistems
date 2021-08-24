@@ -5,22 +5,17 @@ import io.grpc.ServerBuilder;
 import java.net.*;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.Scanner;
 
 import cloudnotes.server.UsersCacheManager;
 
 public class AdminPortalServer {
-  private static final int PORT_NUMBER = 12340;
-
   private final int port;
   private final Server server;
 
   public AdminPortalServer(int port) {
-    this(ServerBuilder.forPort(port), port);
-  }
-
-  public AdminPortalServer(ServerBuilder<?> serverBuilder, int port) {
     this.port = port;
-    this.server = serverBuilder
+    this.server = ServerBuilder.forPort(port)
       .addService(
         new AdminPortalService(new UsersCacheManager()))
       .build();
@@ -43,8 +38,9 @@ public class AdminPortalServer {
     }
   }
 
-  public static void main(String[] args) throws Exception {
-    AdminPortalServer portalAdminServer = new AdminPortalServer(PORT_NUMBER);
+  public static void main(String args[]) throws Exception {
+    int port = new Scanner(args[1]).nextInt();
+    AdminPortalServer portalAdminServer = new AdminPortalServer(port);
     portalAdminServer.start();
     portalAdminServer.blockUntilShutdown();
   }
