@@ -24,6 +24,7 @@ Think about it as a kind of **cloud**-based `samsung notes` app. Where the user 
 
 To build the project we've chosen to use the Google's compiler `Bazel`. All the dependencies needed are listed below:
 
+1. Eclipse [mosquitto](https://mosquitto.org/download/)
 2. Java JDK 7 or higher (you can skip this if you already have some Java JDK installed in your machine).
 
 # Execution

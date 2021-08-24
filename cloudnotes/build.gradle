@@ -9,7 +9,9 @@ plugins {
 
 repositories {
     maven { // The google mirror is less flaky than mavenCentral()
-        url "https://maven-central.storage-download.googleapis.com/maven2/" }
+        url "https://maven-central.storage-download.googleapis.com/maven2/" 
+        url "https://repo.eclipse.org/content/repositories/paho-snapshots/"
+    }
     mavenCentral()
     mavenLocal()
 }
@@ -30,6 +32,7 @@ dependencies {
     implementation "io.grpc:grpc-protobuf:${grpcVersion}"
     implementation "io.grpc:grpc-stub:${grpcVersion}"
     compileOnly "org.apache.tomcat:annotations-api:6.0.53"
+    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
 
     // examples/advanced need this for JsonFormat
     implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
@@ -91,10 +94,26 @@ task userServer(type: CreateStartScripts) {
     classpath = startScripts.classpath
 }
 
+task mqttListener(type: CreateStartScripts) {
+    mainClassName = 'cloudnotes.server.mosquitto.Listener'
+    applicationName = 'mqtt-listener'
+    outputDir = new File(project.buildDir, 'tmp')
+    classpath = startScripts.classpath
+}
+
+task mqttPublisher(type: CreateStartScripts) {
+    mainClassName = 'cloudnotes.server.mosquitto.Publisher'
+    applicationName = 'mqtt-publisher'
+    outputDir = new File(project.buildDir, 'tmp')
+    classpath = startScripts.classpath
+}
+
 applicationDistribution.into('bin') {
     from(adminServer)
     from(adminClient)
     from(userServer)
     from(userClient)
+    from(mqttPublisher)
+    from(mqttListener)
     fileMode = 0755
 }
