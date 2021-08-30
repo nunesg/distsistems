@@ -1,4 +1,4 @@
 java_test*
 bazel-*
-cloudnotes/.gradle
-cloudnotes/build
+*/.gradle
+*/build
