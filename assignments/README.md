@@ -4,4 +4,7 @@ This folder is used to keep the assignments for the Distributed Systems discipli
 
 ## Multithread ring
 
-run: (TODO)
+run:
+
+1. `./gradlew instDist`
+2. `./build/install/cloudnotes/bin/multithread-ring`
