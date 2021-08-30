@@ -7,11 +7,17 @@ import cloudnotes.proto.Note;
 import cloudnotes.proto.NotesCollection;
 
 public class NotesCacheManager implements NotesCacheInterface {
-  public void create(NotesRequest notesRequest) {}
+  public void create(NotesRequest notesRequest) {
+    System.out.println("Notes cache manager create note!");
+  }
   
-  public void update(NotesRequest notesRequest) {}
+  public void update(NotesRequest notesRequest) {
+    System.out.println("Notes cache manager update note!");
+  }
   
-  public void delete(NotesRequest notesRequest) {}
+  public void delete(NotesRequest notesRequest) {
+    System.out.println("Notes cache manager delete note!");
+  }
   
   public Note get(NotesRequest notesRequest) {
     return Note.newBuilder().build();

@@ -15,7 +15,7 @@ import cloudnotes.server.mosquitto.Publisher;
 
 import io.grpc.stub.StreamObserver;
 import java.util.Scanner;
-import java.util.Random;
+import java.time.LocalTime;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
@@ -31,8 +31,9 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
       super();
       this.userIdManager = new UserIdManager();
       this.cacheManager = cacheManager;
-      publisher = new Publisher("adminPublisher#" + new Random().nextInt(5));
-      listener = new Listener("adminListener#" + new Random().nextInt(5));
+      String id = LocalTime.now().toString();
+      publisher = new Publisher("adminPublisher#" + id);
+      listener = new Listener("adminListener#" + id);
       subscribeToTopics();
     }
 

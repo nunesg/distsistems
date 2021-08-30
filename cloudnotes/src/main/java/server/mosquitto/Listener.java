@@ -75,7 +75,7 @@ public class Listener implements MqttCallback {
 	public void deliveryComplete(IMqttDeliveryToken arg0) {}
 
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
-    System.out.println("Mqtt topic : " + topic);
+    System.out.println("\nMessage arrived\nMqtt topic : " + topic);
 		System.out.println("Mqtt msg : " + message.toString());
     callbacks.get(topic).run(message.getPayload());
 	}

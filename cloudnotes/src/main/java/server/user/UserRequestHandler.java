@@ -3,18 +3,30 @@ package cloudnotes.server;
 import java.net.*;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.time.LocalTime;
 
 import cloudnotes.proto.NotesRequest;
 import cloudnotes.proto.NotesRequest.RequestType;
 import cloudnotes.proto.NotesResponse;
 import cloudnotes.proto.OperationStatus;
 import cloudnotes.server.NotesCacheInterface;
+import cloudnotes.server.mosquitto.Listener;
+import cloudnotes.server.mosquitto.Publisher;
 
 public class UserRequestHandler {
+  private static final String CREATE_NOTE_TOPIC = "user/create/note";
+  private static final String UPDATE_NOTE_TOPIC = "user/update/note";
+  private static final String DELETE_NOTE_TOPIC = "user/delete/note";
   private final NotesCacheInterface cacheManager;
+  private final Publisher publisher;
+  private final Listener listener;
 
   public UserRequestHandler(NotesCacheInterface cacheManager) {
     this.cacheManager = cacheManager;
+    String id = LocalTime.now().toString();
+    publisher = new Publisher("userPublisher#" + id);
+    listener = new Listener("userListener#" + id);
+    subscribeToTopics();
   }
 
   public NotesResponse handle(NotesRequest request) {
@@ -41,6 +53,7 @@ public class UserRequestHandler {
 
   private NotesResponse handleCreateNote(NotesRequest request) {
     System.out.println("handleCreateNote()!");
+    publisher.publish(CREATE_NOTE_TOPIC, request.toByteArray());
     return NotesResponse.newBuilder()
         .setType(request.getType())
         .setStatus(
@@ -52,6 +65,7 @@ public class UserRequestHandler {
   
   private NotesResponse handleUpdateNote(NotesRequest request) {
     System.out.println("handleUpdateNote()!");
+    publisher.publish(UPDATE_NOTE_TOPIC, request.toByteArray());
     return NotesResponse.newBuilder()
         .setType(request.getType())
         .setStatus(
@@ -63,6 +77,7 @@ public class UserRequestHandler {
   
   private NotesResponse handleDeleteNote(NotesRequest request) {
     System.out.println("handleDeleteNote()!");
+    publisher.publish(DELETE_NOTE_TOPIC, request.toByteArray());
     return NotesResponse.newBuilder()
         .setType(request.getType())
         .setStatus(
@@ -92,5 +107,17 @@ public class UserRequestHandler {
             .setType(OperationStatus.StatusType.SUCCESS)
             .build())
         .build();
+  }
+
+  private void subscribeToTopics() {
+    listener.subscribe(CREATE_NOTE_TOPIC, (byte[] payload) -> {
+      cacheManager.create(NotesRequest.parseFrom(payload));
+    });
+    listener.subscribe(UPDATE_NOTE_TOPIC, (byte[] payload) -> {
+      cacheManager.update(NotesRequest.parseFrom(payload));
+    });
+    listener.subscribe(DELETE_NOTE_TOPIC, (byte[] payload) -> {
+      cacheManager.delete(NotesRequest.parseFrom(payload));
+    });
   }
 }

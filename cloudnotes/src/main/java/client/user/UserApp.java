@@ -3,15 +3,15 @@ package cloudnotes.client;
 import java.net.*;
 import java.time.LocalTime;
 import java.io.ObjectInputStream;
+import java.util.Scanner;
 
 import cloudnotes.proto.NotesResponse;
 
 public class UserApp {
-  private static final int PORT_NUMBER = 12345;
-
-  public static void main(String[] args) {
+  public static void main(String args[]) {
     try {
-      Socket server = new Socket("localhost", PORT_NUMBER);
+      int port = new Scanner(args[1]).nextInt();
+      Socket server = new Socket("localhost", port);
       // System.out.println("Time: " + LocalTime.now());
       InputHandler.getRequest().writeDelimitedTo(server.getOutputStream());
       // server.shutdownOutput();
