@@ -18,6 +18,7 @@ message OperationStatus {
     FAILED = 1;
   }
   StatusType type = 1;
+  UserId userId = 2;
 }
 
 message UserData {

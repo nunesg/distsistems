@@ -8,6 +8,7 @@ import cloudnotes.proto.AdminPortalGrpc;
 import cloudnotes.proto.AdminPortalGrpc.AdminPortalBlockingStub;
 import cloudnotes.proto.OperationStatus;
 import cloudnotes.proto.User;
+import cloudnotes.proto.UserData;
 import cloudnotes.proto.UserId;
 import cloudnotes.proto.UsersCollection;
 import cloudnotes.proto.EmptyMessage;
@@ -56,8 +57,19 @@ public class Admin {
   }
 
   private OperationStatus createUser() {
+    int userId;
+    String userName;
+    Scanner in = new Scanner(System.in);
+    System.out.printf("User name: ");
+    userName = in.nextLine();
+
     return blockingStub.createUser(
-      User.newBuilder().build());
+      User.newBuilder()
+        .setData(
+          UserData.newBuilder()
+            .setName(userName)
+            .build())
+        .build());
   }
 
   private OperationStatus updateUser() {
@@ -71,8 +83,14 @@ public class Admin {
   }
 
   private OperationStatus getUser() {
+    int noteId, userId;
+    Scanner in = new Scanner(System.in);
+    System.out.printf("User id: ");
+    userId = in.nextInt();
+
     User user = blockingStub.getUser(
-      UserId.newBuilder().build());
+      UserId.newBuilder().setValue(userId).build());
+    System.out.println("User: " + user.toString());
     return OperationStatus.newBuilder().setType(OperationStatus.StatusType.SUCCESS).build();
   }
 

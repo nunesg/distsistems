@@ -2,8 +2,12 @@ package cloudnotes.client;
 
 import java.util.Scanner;
 
+import cloudnotes.proto.Note;
+import cloudnotes.proto.NoteContent;
+import cloudnotes.proto.NoteId;
 import cloudnotes.proto.NotesRequest;
 import cloudnotes.proto.NotesRequest.RequestType;
+import cloudnotes.proto.UserId;
 
 public class InputHandler {
   public static NotesRequest getRequest() {
@@ -11,7 +15,7 @@ public class InputHandler {
     Scanner in = new Scanner(System.in);
     int val = in.nextInt();
     System.out.println("Value typed: " + val);
-    return NotesRequest.newBuilder().setType(getTypeFromInt(val)).build();
+    return buildRequestForType(getTypeFromInt(val));
   }
 
   private static NotesRequest.RequestType getTypeFromInt(int val) {
@@ -29,5 +33,131 @@ public class InputHandler {
       default:
         return NotesRequest.RequestType.UNKNOWN;
     }
+  }
+
+  private static NotesRequest buildRequestForType(NotesRequest.RequestType type) {
+    switch(type) {
+      case CREATE:
+        return buildCreateRequest();
+      case UPDATE:
+        return buildUpdateRequest();
+      case DELETE:
+        return buildDeleteRequest();
+      case GET:
+        return buildGetRequest();
+      case GET_ALL:
+        return buildGetAllRequest();
+      default:
+        return NotesRequest.newBuilder().setType(NotesRequest.RequestType.UNKNOWN).build();
+    }
+  }
+
+  private static NotesRequest buildCreateRequest() {
+    String title, body;
+    int userId;
+    Scanner in = new Scanner(System.in);
+    System.out.printf("Title: ");
+    title = in.nextLine();
+    System.out.printf("Body: ");
+    body = in.nextLine();
+    System.out.printf("User id: ");
+    userId = in.nextInt();
+    System.out.println("userId: " + userId);
+    return NotesRequest.newBuilder()
+      .setType(NotesRequest.RequestType.CREATE)
+      .setNote(
+        Note.newBuilder().setContent(
+          NoteContent.newBuilder()
+            .setTitle(title)
+            .setBody(body)
+            .build())
+        .build())
+      .setUserId(
+        UserId.newBuilder().setValue(userId).build())
+      .build();
+
+  }
+
+  private static NotesRequest buildUpdateRequest() {
+    String title, body;
+    int userId, noteId;
+    Scanner in = new Scanner(System.in);
+    System.out.printf("Title: ");
+    title = in.nextLine();
+    System.out.printf("Body: ");
+    body = in.nextLine();
+    System.out.printf("User id: ");
+    userId = in.nextInt();
+    System.out.printf("Note id: ");
+    noteId = in.nextInt();
+
+    return NotesRequest.newBuilder()
+      .setType(NotesRequest.RequestType.UPDATE)
+      .setNote(
+        Note.newBuilder()
+          .setContent(
+            NoteContent.newBuilder()
+              .setTitle(title)
+              .setBody(body)
+              .build())
+          .setId(
+            NoteId.newBuilder().setValue(noteId).build())
+          .build())
+      .setUserId(
+        UserId.newBuilder().setValue(userId).build())
+      .build();
+  }
+
+  private static NotesRequest buildDeleteRequest() {
+    int noteId, userId;
+    Scanner in = new Scanner(System.in);
+    System.out.printf("Note id: ");
+    noteId = in.nextInt();
+    System.out.printf("User id: ");
+    userId = in.nextInt();
+
+    return NotesRequest.newBuilder()
+      .setType(NotesRequest.RequestType.DELETE)
+      .setNote(
+        Note.newBuilder()
+          .setId(
+            NoteId.newBuilder().setValue(noteId).build())
+          .build())
+      .setUserId(
+        UserId.newBuilder().setValue(userId).build())
+      .build();
+  }
+
+  private static NotesRequest buildGetRequest() {
+    int noteId, userId;
+    Scanner in = new Scanner(System.in);
+    System.out.printf("Note id: ");
+    noteId = in.nextInt();
+    System.out.printf("User id: ");
+    userId = in.nextInt();
+
+    return NotesRequest.newBuilder()
+      .setType(NotesRequest.RequestType.GET)
+      .setNote(
+        Note.newBuilder()
+          .setId(
+            NoteId.newBuilder().setValue(noteId).build())
+          .build())
+      .setUserId(
+        UserId.newBuilder().setValue(userId).build())
+      .build();
+  }
+
+  private static NotesRequest buildGetAllRequest() {
+    int userId;
+    Scanner in = new Scanner(System.in);
+    System.out.printf("User id: ");
+    userId = in.nextInt();
+
+    return NotesRequest.newBuilder()
+      .setType(NotesRequest.RequestType.GET_ALL)
+      .setUserId(
+        UserId.newBuilder().setValue(userId).build())
+      .build();
   }
 }

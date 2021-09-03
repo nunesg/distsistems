@@ -18,9 +18,8 @@ message NotesRequest {
     GET_ALL = 5;  // get all notes
   }
   RequestType type = 1;
-  Note note = 2; // used by CREATE and UPDATE
-  NoteId noteId = 3; // used by GET and DELETE
-  UserId user = 4; // used to identify the user
+  Note note = 2; // used by GET, DELETE, CREATE and UPDATE
+  UserId userId = 4; // used to identify the user
 }
 
 message NotesResponse {
@@ -45,4 +44,9 @@ message Note {
 
 message NotesCollection {
   repeated Note notes = 1;
+}
+
+message NoteEntry {
+  Note note = 1;
+  UserId userId = 2;
 }

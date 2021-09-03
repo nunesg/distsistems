@@ -80,13 +80,7 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
     @Override
     public void getUser(UserId userIdRequest, StreamObserver<User> responseObserver) {
       System.out.println("getUser request");
-      responseObserver.onNext(
-        User.newBuilder()
-          .setId(
-            UserId.newBuilder()
-              .setValue(userIdRequest.getValue())
-              .build())
-          .build());
+      responseObserver.onNext(cacheManager.get(userIdRequest));
       responseObserver.onCompleted();
     }
     

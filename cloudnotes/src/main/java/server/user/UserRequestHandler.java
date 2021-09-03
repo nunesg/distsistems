@@ -5,6 +5,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.time.LocalTime;
 
+import cloudnotes.proto.Note;
+import cloudnotes.proto.NotesCollection;
 import cloudnotes.proto.NotesRequest;
 import cloudnotes.proto.NotesRequest.RequestType;
 import cloudnotes.proto.NotesResponse;
@@ -95,18 +97,26 @@ public class UserRequestHandler {
           OperationStatus.newBuilder()
             .setType(OperationStatus.StatusType.SUCCESS)
             .build())
+        .addValues(cacheManager.get(request))
         .build();
   }
   
   private NotesResponse handleGetAllNotes(NotesRequest request) {
     System.out.println("handleGetAllNotes()!");
-    return NotesResponse.newBuilder()
-        .setType(request.getType())
-        .setStatus(
-          OperationStatus.newBuilder()
-            .setType(OperationStatus.StatusType.SUCCESS)
-            .build())
-        .build();
+    NotesCollection notesCollection = cacheManager.getAll(request);
+    NotesResponse.Builder builder = NotesResponse.newBuilder()
+      .setType(request.getType())
+      .setStatus(
+        OperationStatus.newBuilder()
+          .setType(OperationStatus.StatusType.SUCCESS)
+          .build());
+
+    for (int i=0; i<notesCollection.getNotesCount(); i++) {
+      builder.addValues(notesCollection.getNotes(i));
+      System.out.println("add note");
+    }
+
+    return builder.build();
   }
 
   private void subscribeToTopics() {
