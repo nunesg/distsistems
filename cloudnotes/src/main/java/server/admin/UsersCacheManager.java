@@ -30,10 +30,12 @@ public class UsersCacheManager implements UsersCacheInterface {
   
   public void update(User user) {
     System.out.println("Update user on cacheManager!");
+    cache.put(user.getId().getValue(), toJson(user));
   }
   
   public void delete(UserId userId) {
     System.out.println("Delete user on cacheManager!");
+    cache.remove(userId.getValue());
   }
 
   public User get(UserId userId) {
@@ -43,7 +45,10 @@ public class UsersCacheManager implements UsersCacheInterface {
   }
 
   public UsersCollection getAll() {
-    return UsersCollection.newBuilder().build();
+    System.out.println("Users cache manager getAll!");
+    UsersCollection.Builder builder = UsersCollection.newBuilder();
+    cache.forEach((k, v) -> builder.addValues(fromJson(v)));
+    return builder.build();
   }
 
   private UserId getId() {

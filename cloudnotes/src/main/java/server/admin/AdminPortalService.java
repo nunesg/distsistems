@@ -87,13 +87,7 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
     @Override
     public void getAllUsers(EmptyMessage emptyReq, StreamObserver<UsersCollection> responseObserver) {
       System.out.println("getAllUsers request");
-      responseObserver.onNext(
-        UsersCollection.newBuilder()
-          .addValues(
-            User.newBuilder().build())
-          .addValues(
-            User.newBuilder().build())
-          .build());
+      responseObserver.onNext(cacheManager.getAll());
       responseObserver.onCompleted();
     }
 

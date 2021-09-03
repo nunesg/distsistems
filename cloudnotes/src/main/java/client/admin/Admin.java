@@ -29,7 +29,7 @@ public class Admin {
   public void run() {
     Scanner in = new Scanner(System.in);
     
-    System.out.println("Type the desired operation:\n0- createUser\n1- update user\n2- delete user\n3- get user\n4- get all users\n5- get valid id");
+    System.out.println("Type the desired operation:\n0- createUser\n1- update user\n2- delete user\n3- get user\n4- get all users");
     int val = in.nextInt();
     OperationStatus status = handleOperation(val);
     System.out.println("Request status: " + status.getType().getValueDescriptor().getName());
@@ -48,8 +48,6 @@ public class Admin {
         return getUser();
       case 4:
         return getAllUsers();
-      case 5:
-        return getValidId();
       default:
         return OperationStatus.newBuilder()
           .setType(OperationStatus.StatusType.FAILED).build();
@@ -73,13 +71,38 @@ public class Admin {
   }
 
   private OperationStatus updateUser() {
+    int userId;
+    String userName;
+    Scanner in = new Scanner(System.in);
+    System.out.printf("User id: ");
+    userId = in.nextInt();
+    System.out.printf("User name: ");
+    in.nextLine();
+    userName = in.nextLine();
+
     return blockingStub.updateUser(
-      User.newBuilder().build());
+      User.newBuilder()
+        .setData(
+          UserData.newBuilder()
+            .setName(userName)
+            .build())
+        .setId(
+          UserId.newBuilder()
+            .setValue(userId)
+            .build())
+        .build());
   }
 
   private OperationStatus deleteUser() {
+    int userId;
+    Scanner in = new Scanner(System.in);
+    System.out.printf("User id: ");
+    userId = in.nextInt();
+
     return blockingStub.deleteUser(
-      UserId.newBuilder().build());
+        UserId.newBuilder()
+          .setValue(userId)
+          .build());
   }
 
   private OperationStatus getUser() {
@@ -90,19 +113,18 @@ public class Admin {
 
     User user = blockingStub.getUser(
       UserId.newBuilder().setValue(userId).build());
-    System.out.println("User: " + user.toString());
+    System.out.println("User retrieved: " + user.toString());
     return OperationStatus.newBuilder().setType(OperationStatus.StatusType.SUCCESS).build();
   }
 
   private OperationStatus getAllUsers() {
     UsersCollection users = blockingStub.getAllUsers(
       EmptyMessage.newBuilder().build());
+    System.out.println("Users retrieved: " + users.toString());
     return OperationStatus.newBuilder().setType(OperationStatus.StatusType.SUCCESS).build();
   }
 
-  private OperationStatus getValidId() {
-    UserId id = blockingStub.getValidId(
-      EmptyMessage.newBuilder().build());
-    return OperationStatus.newBuilder().setType(OperationStatus.StatusType.SUCCESS).build();
+  private UserId getValidId() {
+    return blockingStub.getValidId(EmptyMessage.newBuilder().build());
   }
 }
