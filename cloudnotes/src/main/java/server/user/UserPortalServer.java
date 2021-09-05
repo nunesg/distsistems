@@ -7,10 +7,12 @@ import java.util.Scanner;
 
 import cloudnotes.proto.NotesRequest;
 import cloudnotes.server.NotesCacheManager;
+import cloudnotes.server.UsersCacheManager;
 
 public class UserPortalServer {
   public static void main(String args[]) {
-    UserPortalService service = new UserPortalService(new NotesCacheManager());
+    UserPortalService service = 
+      new UserPortalService(new NotesCacheManager(), new UsersCacheManager());
     int port = new Scanner(args[1]).nextInt();
 
     try {

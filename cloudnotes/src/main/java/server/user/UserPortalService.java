@@ -11,20 +11,24 @@ import cloudnotes.proto.NotesRequest;
 import cloudnotes.proto.NotesRequest.RequestType;
 import cloudnotes.proto.NotesResponse;
 import cloudnotes.proto.OperationStatus;
+import cloudnotes.proto.User;
+import cloudnotes.proto.UserId;
+
 import cloudnotes.server.NotesCacheInterface;
+import cloudnotes.server.UsersCacheInterface;
 import cloudnotes.server.mosquitto.Listener;
 import cloudnotes.server.mosquitto.Publisher;
+import cloudnotes.server.mosquitto.Topics;
 
 public class UserPortalService {
-  private static final String CREATE_NOTE_TOPIC = "user/create/note";
-  private static final String UPDATE_NOTE_TOPIC = "user/update/note";
-  private static final String DELETE_NOTE_TOPIC = "user/delete/note";
-  private final NotesCacheInterface cacheManager;
+  private final NotesCacheInterface cacheNotes;
+  private final UsersCacheInterface cacheUsers;
   private final Publisher publisher;
   private final Listener listener;
 
-  public UserPortalService(NotesCacheInterface cacheManager) {
-    this.cacheManager = cacheManager;
+  public UserPortalService(NotesCacheInterface cacheNotes, UsersCacheInterface cacheUsers) {
+    this.cacheNotes = cacheNotes;
+    this.cacheUsers = cacheUsers;
     String id = LocalTime.now().toString();
     publisher = new Publisher("userPublisher#" + id);
     listener = new Listener("userListener#" + id);
@@ -55,7 +59,7 @@ public class UserPortalService {
 
   private NotesResponse handleCreateNote(NotesRequest request) {
     System.out.println("handleCreateNote()!");
-    publisher.publish(CREATE_NOTE_TOPIC, request.toByteArray());
+    publisher.publish(Topics.CREATE_NOTE, request.toByteArray());
     return NotesResponse.newBuilder()
         .setType(request.getType())
         .setStatus(
@@ -67,7 +71,7 @@ public class UserPortalService {
   
   private NotesResponse handleUpdateNote(NotesRequest request) {
     System.out.println("handleUpdateNote()!");
-    publisher.publish(UPDATE_NOTE_TOPIC, request.toByteArray());
+    publisher.publish(Topics.UPDATE_NOTE, request.toByteArray());
     return NotesResponse.newBuilder()
         .setType(request.getType())
         .setStatus(
@@ -79,7 +83,7 @@ public class UserPortalService {
   
   private NotesResponse handleDeleteNote(NotesRequest request) {
     System.out.println("handleDeleteNote()!");
-    publisher.publish(DELETE_NOTE_TOPIC, request.toByteArray());
+    publisher.publish(Topics.DELETE_NOTE, request.toByteArray());
     return NotesResponse.newBuilder()
         .setType(request.getType())
         .setStatus(
@@ -97,13 +101,13 @@ public class UserPortalService {
           OperationStatus.newBuilder()
             .setType(OperationStatus.StatusType.SUCCESS)
             .build())
-        .addValues(cacheManager.get(request))
+        .addValues(cacheNotes.get(request))
         .build();
   }
   
   private NotesResponse handleGetAllNotes(NotesRequest request) {
     System.out.println("handleGetAllNotes()!");
-    NotesCollection notesCollection = cacheManager.getAll(request);
+    NotesCollection notesCollection = cacheNotes.getAll(request);
     NotesResponse.Builder builder = NotesResponse.newBuilder()
       .setType(request.getType())
       .setStatus(
@@ -120,14 +124,23 @@ public class UserPortalService {
   }
 
   private void subscribeToTopics() {
-    listener.subscribe(CREATE_NOTE_TOPIC, (byte[] payload) -> {
-      cacheManager.create(NotesRequest.parseFrom(payload));
+    listener.subscribe(Topics.CREATE_NOTE, (byte[] payload) -> {
+      cacheNotes.create(NotesRequest.parseFrom(payload));
     });
-    listener.subscribe(UPDATE_NOTE_TOPIC, (byte[] payload) -> {
-      cacheManager.update(NotesRequest.parseFrom(payload));
+    listener.subscribe(Topics.UPDATE_NOTE, (byte[] payload) -> {
+      cacheNotes.update(NotesRequest.parseFrom(payload));
     });
-    listener.subscribe(DELETE_NOTE_TOPIC, (byte[] payload) -> {
-      cacheManager.delete(NotesRequest.parseFrom(payload));
+    listener.subscribe(Topics.DELETE_NOTE, (byte[] payload) -> {
+      cacheNotes.delete(NotesRequest.parseFrom(payload));
+    });
+    listener.subscribe(Topics.CREATE_USER, (byte[] payload) -> {
+      cacheUsers.create(User.parseFrom(payload));
+    });
+    listener.subscribe(Topics.UPDATE_USER, (byte[] payload) -> {
+      cacheUsers.update(User.parseFrom(payload));
+    });
+    listener.subscribe(Topics.DELETE_USER, (byte[] payload) -> {
+      cacheUsers.delete(UserId.parseFrom(payload));
     });
   }
 }

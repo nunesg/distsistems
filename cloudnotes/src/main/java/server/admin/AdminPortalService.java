@@ -12,6 +12,7 @@ import cloudnotes.proto.UsersCollection;
 import cloudnotes.server.UsersCacheInterface;
 import cloudnotes.server.mosquitto.Listener;
 import cloudnotes.server.mosquitto.Publisher;
+import cloudnotes.server.mosquitto.Topics;
 
 import io.grpc.stub.StreamObserver;
 import java.util.Scanner;
@@ -19,9 +20,6 @@ import java.time.LocalTime;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
-    private static final String CREATE_USER_TOPIC = "admin/create/user";
-    private static final String UPDATE_USER_TOPIC = "admin/update/user";
-    private static final String DELETE_USER_TOPIC = "admin/delete/user";
     private final UserIdManager userIdManager;
     private final UsersCacheInterface cacheManager;
     private Publisher publisher;
@@ -47,7 +45,7 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
     @Override
     public void createUser(User userRequest, StreamObserver<OperationStatus> responseObserver) {
       System.out.println("createUser request");
-      publisher.publish(CREATE_USER_TOPIC, userRequest.toByteArray());
+      publisher.publish(Topics.CREATE_USER, userRequest.toByteArray());
       responseObserver.onNext(
         OperationStatus.newBuilder()
           .setType(OperationStatus.StatusType.SUCCESS)
@@ -58,7 +56,7 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
     @Override
     public void updateUser(User userRequest, StreamObserver<OperationStatus> responseObserver) {
       System.out.println("updateUser request");
-      publisher.publish(UPDATE_USER_TOPIC, userRequest.toByteArray());
+      publisher.publish(Topics.UPDATE_USER, userRequest.toByteArray());
       OperationStatus status = OperationStatus.newBuilder()
         .setType(OperationStatus.StatusType.SUCCESS)
         .build();
@@ -69,7 +67,7 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
     @Override
     public void deleteUser(UserId userIdRequest, StreamObserver<OperationStatus> responseObserver) {
       System.out.println("deleteUser request");
-      publisher.publish(DELETE_USER_TOPIC, userIdRequest.toByteArray());
+      publisher.publish(Topics.DELETE_USER, userIdRequest.toByteArray());
       responseObserver.onNext(
         OperationStatus.newBuilder()
           .setType(OperationStatus.StatusType.SUCCESS)
@@ -92,13 +90,13 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
     }
 
     private void subscribeToTopics() {
-      listener.subscribe(CREATE_USER_TOPIC, (byte[] payload) -> {
+      listener.subscribe(Topics.CREATE_USER, (byte[] payload) -> {
         cacheManager.create(User.parseFrom(payload));
       });
-      listener.subscribe(UPDATE_USER_TOPIC, (byte[] payload) -> {
+      listener.subscribe(Topics.UPDATE_USER, (byte[] payload) -> {
         cacheManager.update(User.parseFrom(payload));
       });
-      listener.subscribe(DELETE_USER_TOPIC, (byte[] payload) -> {
+      listener.subscribe(Topics.DELETE_USER, (byte[] payload) -> {
         cacheManager.delete(UserId.parseFrom(payload));
       });
     }
