@@ -50,3 +50,28 @@ After setting up the server, open another terminal and run:
 - `./build/install/cloudnotes/bin/admin-client -p <server_port>` to start the `AdminApp` application, which will communicate with server running on port `<server_port>`.
 
 The applications on client side (`UserApp` and `AdminApp`) should print on the screen the message received from the respective server.
+
+# Data scheme
+
+There's two types of data that are kept to keep the system working. **Users** and **Notes**. Each User is composed of a name and an Id (**key**), and each note has a title, a body, an ID for itself (**key**) and its owner's ID. The scheme (in JSON format) is below:
+
+## Users
+```js
+{
+  "name": string,
+  "id": integer
+}
+```
+## Notes
+```js
+{
+  "title": string,
+  "body": string,
+  "id": integer,
+  "userId: integer
+}
+```
+
+Each cache is a hash table where the key is the ID and the value is the message's string representation in JSON format. 
+
+Each type of data (User and Note) **have its own cache manager** and therefore **are kept in different tables**.
