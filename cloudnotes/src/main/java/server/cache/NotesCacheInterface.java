@@ -8,11 +8,11 @@ import cloudnotes.proto.NotesCollection;
 public interface NotesCacheInterface {
   public boolean has(NoteId id);
 
-  public void create(NotesRequest notesRequest);
+  public NoteId create(NotesRequest notesRequest);
   
   public void update(NotesRequest notesRequest);
   
-  public void delete(NotesRequest notesRequest);
+  public void delete(NotesRequest notesRequest) throws Exception;
   
   public Note get(NotesRequest notesRequest);
 

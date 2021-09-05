@@ -29,7 +29,6 @@ public class UsersCacheManager implements UsersCacheInterface {
         .build();
     System.out.println("Users cache manager create user! JSON: " + toJson(user));
     cache.put(user.getId().getValue(), toJson(user));
-    System.out.println("get: " + cache.get(user.getId().getValue()));
     return user.getId();
   }
   

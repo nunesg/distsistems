@@ -24,11 +24,11 @@ public class NotesCacheManager implements NotesCacheInterface {
     return cache.containsKey(id.getValue());
   }
 
-  public void create(NotesRequest notesRequest) {
+  public NoteId create(NotesRequest notesRequest) {
     Note note = notesRequest.getNote().toBuilder().setId(getNewId()).build();
     System.out.println("Notes cache manager create note! JSON: " + toJson(note));
     cache.put(note.getId().getValue(), toJson(note));
-    System.out.println("get: " + cache.get(note.getId().getValue()));
+    return note.getId();
   }
   
   public void update(NotesRequest notesRequest) {
@@ -36,14 +36,14 @@ public class NotesCacheManager implements NotesCacheInterface {
     cache.put(notesRequest.getNote().getId().getValue(), toJson(notesRequest.getNote()));
   }
   
-  public void delete(NotesRequest notesRequest) {
+  public void delete(NotesRequest notesRequest) throws Exception {
     System.out.println("Notes cache manager delete note " + notesRequest.getNote().getId().getValue() + "!");
     Note note = fromJson(cache.get(notesRequest.getNote().getId().getValue()));
-    if (note.getUserId().getValue() == notesRequest.getNote().getUserId().getValue()) {
+    if (note.getUserId().getValue().equals(notesRequest.getNote().getUserId().getValue())) {
       cache.remove(note.getId().getValue());
       return;
     }
-    System.out.println("Note was not removed. UserId didn't match.");
+    throw new Exception("Note was not removed. UserId didn't match.");
   }
   
   public Note get(NotesRequest notesRequest) {
@@ -57,7 +57,7 @@ public class NotesCacheManager implements NotesCacheInterface {
     NotesCollection.Builder builder = NotesCollection.newBuilder();
     cache.forEach((k, v) -> {
       Note note = fromJson(v);
-      if (notesRequest.getNote().getUserId().getValue() == note.getUserId().getValue()) {
+      if (notesRequest.getNote().getUserId().getValue().equals(note.getUserId().getValue())) {
         builder.addNotes(note);
       }
     });

@@ -76,7 +76,6 @@ public class Admin {
     System.out.printf("User id: ");
     userId = in.nextLine();
     System.out.printf("User name: ");
-    in.nextLine();
     userName = in.nextLine();
 
     return blockingStub.updateUser(

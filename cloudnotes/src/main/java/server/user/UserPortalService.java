@@ -69,7 +69,7 @@ public class UserPortalService {
       if (!userAuthenticated(request.getNote().getUserId())) {
         throw new Exception("Invalid user");
       }
-      cacheNotes.create(request);
+      builder.addValues(Note.newBuilder().setId(cacheNotes.create(request)).build());
       markAsSuccess(builder);
       
       publisher.publish(Topics.CREATE_NOTE, request.toByteArray());
@@ -131,8 +131,13 @@ public class UserPortalService {
       markAsFailure(builder, "Invalid user or noteId");
       return builder.build();
     }
+    Note note = cacheNotes.get(request);
+    if (!note.getId().getValue().equals(request.getNote().getUserId().getValue())) {
+      markAsFailure(builder, "This note doesn't belong to the given user");
+      return builder.build();
+    }
     markAsSuccess(builder);
-    return builder.addValues(cacheNotes.get(request)).build();
+    return builder.addValues(note).build();
   }
   
   private NotesResponse handleGetAllNotes(NotesRequest request) {
