@@ -68,7 +68,7 @@ There's two types of data that are kept to keep the system working. **Users** an
   "title": string,
   "body": string,
   "id": integer,
-  "userId: integer
+  "userId": integer
 }
 ```
 
