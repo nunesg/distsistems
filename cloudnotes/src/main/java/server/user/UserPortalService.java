@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.time.LocalTime;
 
 import cloudnotes.proto.Note;
+import cloudnotes.proto.NoteId;
 import cloudnotes.proto.NotesCollection;
 import cloudnotes.proto.NotesRequest;
 import cloudnotes.proto.NotesRequest.RequestType;
@@ -13,6 +14,7 @@ import cloudnotes.proto.NotesResponse;
 import cloudnotes.proto.OperationStatus;
 import cloudnotes.proto.User;
 import cloudnotes.proto.UserId;
+import cloudnotes.proto.UserRequest;
 
 import cloudnotes.server.NotesCacheInterface;
 import cloudnotes.server.UsersCacheInterface;
@@ -64,6 +66,9 @@ public class UserPortalService {
       NotesResponse.newBuilder().setType(request.getType());
     try {
       request = request.toBuilder().setSender(publisher.getId()).build();
+      if (!userAuthenticated(request.getNote().getUserId())) {
+        throw new Exception("invalid user.");
+      }
       cacheNotes.create(request);
       markAsSuccess(builder);
       
@@ -81,6 +86,10 @@ public class UserPortalService {
       NotesResponse.newBuilder().setType(request.getType());
     try {
       request = request.toBuilder().setSender(publisher.getId()).build();
+      if (!userAuthenticated(request.getNote().getUserId()) || 
+          !hasNote(request.getNote().getId())) {
+        throw new Exception("invalid user or note id");
+      }
       cacheNotes.update(request);
       markAsSuccess(builder);
       
@@ -98,6 +107,10 @@ public class UserPortalService {
       NotesResponse.newBuilder().setType(request.getType());
     try {
       request = request.toBuilder().setSender(publisher.getId()).build();
+      if (!userAuthenticated(request.getNote().getUserId()) || 
+          !hasNote(request.getNote().getId())) {
+        throw new Exception("invalid user or noteId");
+      }
       cacheNotes.delete(request);
       markAsSuccess(builder);
       
@@ -110,26 +123,30 @@ public class UserPortalService {
   
   private NotesResponse handleGetNote(NotesRequest request) {
     System.out.println("handleGetNote()!");
-    return NotesResponse.newBuilder()
-        .setType(request.getType())
-        .setStatus(
-          OperationStatus.newBuilder()
-            .setType(OperationStatus.StatusType.SUCCESS)
-            .build())
-        .addValues(cacheNotes.get(request))
-        .build();
+    NotesResponse.Builder builder = NotesResponse.newBuilder()
+        .setType(request.getType());
+
+    if (!userAuthenticated(request.getNote().getUserId()) || 
+        !hasNote(request.getNote().getId())) {
+      markAsFailure(builder);
+      return builder.build();
+    }
+    markAsSuccess(builder);
+    return builder.addValues(cacheNotes.get(request)).build();
   }
   
   private NotesResponse handleGetAllNotes(NotesRequest request) {
     System.out.println("handleGetAllNotes()!");
-    NotesCollection notesCollection = cacheNotes.getAll(request);
+    
     NotesResponse.Builder builder = NotesResponse.newBuilder()
-      .setType(request.getType())
-      .setStatus(
-        OperationStatus.newBuilder()
-          .setType(OperationStatus.StatusType.SUCCESS)
-          .build());
+      .setType(request.getType());
+    if (!userAuthenticated(request.getNote().getUserId())) {
+      markAsFailure(builder);
+      return builder.build();
+    }
+    markAsSuccess(builder);
 
+    NotesCollection notesCollection = cacheNotes.getAll(request);
     for (int i=0; i<notesCollection.getNotesCount(); i++) {
       builder.addValues(notesCollection.getNotes(i));
       System.out.println("add note");
@@ -158,14 +175,22 @@ public class UserPortalService {
       cacheNotes.delete(NotesRequest.parseFrom(payload));
     });
     listener.subscribe(Topics.CREATE_USER, (byte[] payload) -> {
-      cacheUsers.create(User.parseFrom(payload));
+      cacheUsers.create(UserRequest.parseFrom(payload).getUser());
     });
     listener.subscribe(Topics.UPDATE_USER, (byte[] payload) -> {
-      cacheUsers.update(User.parseFrom(payload));
+      cacheUsers.update(UserRequest.parseFrom(payload).getUser());
     });
     listener.subscribe(Topics.DELETE_USER, (byte[] payload) -> {
-      cacheUsers.delete(UserId.parseFrom(payload));
+      cacheUsers.delete(UserRequest.parseFrom(payload).getUser().getId());
     });
+  }
+
+  private boolean userAuthenticated(UserId id) {
+    return cacheUsers.has(id);
+  }
+
+  private boolean hasNote(NoteId id) {
+    return cacheNotes.has(id);
   }
 
   private String getSenderFromPayload(byte[] payload) throws Exception {

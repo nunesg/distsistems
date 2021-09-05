@@ -2,9 +2,12 @@ package cloudnotes.server;
 
 import cloudnotes.proto.NotesRequest;
 import cloudnotes.proto.Note;
+import cloudnotes.proto.NoteId;
 import cloudnotes.proto.NotesCollection;
 
 public interface NotesCacheInterface {
+  public boolean has(NoteId id);
+
   public void create(NotesRequest notesRequest);
   
   public void update(NotesRequest notesRequest);

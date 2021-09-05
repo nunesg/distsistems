@@ -18,6 +18,10 @@ public class UsersCacheManager implements UsersCacheInterface {
     nextId = 0;
   }
 
+  public boolean has(UserId id) {
+    return cache.containsKey(id.getValue());
+  }
+
   public UserId create(User user) {
     System.out.println("Create user on cacheManager!");
     user = user.toBuilder()

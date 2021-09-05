@@ -20,6 +20,10 @@ public class NotesCacheManager implements NotesCacheInterface {
     lastId = 0;
   }
 
+  public boolean has(NoteId id) {
+    return cache.containsKey(id.getValue());
+  }
+
   public void create(NotesRequest notesRequest) {
     Note note = notesRequest.getNote().toBuilder().setId(getNewId()).build();
     System.out.println("Notes cache manager create note! JSON: " + toJson(note));
