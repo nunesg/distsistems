@@ -121,8 +121,4 @@ public class Admin {
     System.out.println("Users retrieved: " + users.toString());
     return OperationStatus.newBuilder().setType(OperationStatus.StatusType.SUCCESS).build();
   }
-
-  private UserId getValidId() {
-    return blockingStub.getValidId(EmptyMessage.newBuilder().build());
-  }
 }

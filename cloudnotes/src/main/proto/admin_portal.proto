@@ -9,8 +9,6 @@ option java_package = "cloudnotes.proto";
 option java_outer_classname = "AdminPortalProto";
 
 service AdminPortal {
-  rpc getValidId (EmptyMessage) returns (UserId) {}
-  
   rpc createUser (User) returns (OperationStatus) {}
   rpc updateUser (User) returns (OperationStatus) {}
   
