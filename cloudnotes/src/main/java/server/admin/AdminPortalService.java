@@ -52,7 +52,7 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
             .toByteArray());
 
       } catch (Exception e) {
-        markAsFailure(builder);
+        markAsFailure(builder, e.getMessage());
       }
       responseObserver.onNext(builder.build());
       responseObserver.onCompleted();
@@ -78,7 +78,7 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
             .build()
             .toByteArray());
       } catch (Exception e) {
-        markAsFailure(builder);
+        markAsFailure(builder, e.getMessage());
       }
       responseObserver.onNext(builder.build());
       responseObserver.onCompleted();
@@ -105,7 +105,7 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
             .build()
             .toByteArray());
       } catch (Exception e) {
-        markAsFailure(builder);
+        markAsFailure(builder, e.getMessage());
       }
       responseObserver.onNext(builder.build());
       responseObserver.onCompleted();
@@ -118,7 +118,7 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
       OperationStatus.Builder statusBuilder = OperationStatus.newBuilder();
 
       if (!hasUser(userIdRequest)) {
-        markAsFailure(statusBuilder);
+        markAsFailure(statusBuilder, "Invalid user");
         responseObserver.onNext(builder.setStatus(statusBuilder.build()).build());
       } else {
         markAsSuccess(statusBuilder);
@@ -167,8 +167,8 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
       return UserRequest.parseFrom(payload).getSender();
     }
 
-    private void markAsFailure(OperationStatus.Builder builder) {
-      builder.setType(OperationStatus.StatusType.FAILED);
+    private void markAsFailure(OperationStatus.Builder builder, String msg) {
+      builder.setType(OperationStatus.StatusType.FAILED).setMessage(msg);
     }
 
     private void markAsSuccess(OperationStatus.Builder builder) {

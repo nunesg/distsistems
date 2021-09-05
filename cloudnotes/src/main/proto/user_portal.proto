@@ -29,7 +29,7 @@ message NotesResponse {
 }
 
 message NoteId {
-  int32 value = 1;
+  string value = 1; // BigInteger
 }
 
 message NoteContent {

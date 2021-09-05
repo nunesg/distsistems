@@ -54,14 +54,14 @@ public class InputHandler {
 
   private static NotesRequest buildCreateRequest() {
     String title, body;
-    int userId;
+    String userId;
     Scanner in = new Scanner(System.in);
     System.out.printf("Title: ");
     title = in.nextLine();
     System.out.printf("Body: ");
     body = in.nextLine();
     System.out.printf("User id: ");
-    userId = in.nextInt();
+    userId = in.nextLine();
     System.out.println("userId: " + userId);
     return NotesRequest.newBuilder()
       .setType(NotesRequest.RequestType.CREATE)
@@ -76,21 +76,20 @@ public class InputHandler {
             UserId.newBuilder().setValue(userId).build())
           .build())
       .build();
-
   }
 
   private static NotesRequest buildUpdateRequest() {
     String title, body;
-    int userId, noteId;
+    String userId, noteId;
     Scanner in = new Scanner(System.in);
     System.out.printf("Title: ");
     title = in.nextLine();
     System.out.printf("Body: ");
     body = in.nextLine();
     System.out.printf("User id: ");
-    userId = in.nextInt();
+    userId = in.nextLine();
     System.out.printf("Note id: ");
-    noteId = in.nextInt();
+    noteId = in.nextLine();
 
     return NotesRequest.newBuilder()
       .setType(NotesRequest.RequestType.UPDATE)
@@ -110,12 +109,12 @@ public class InputHandler {
   }
 
   private static NotesRequest buildDeleteRequest() {
-    int noteId, userId;
+    String noteId, userId;
     Scanner in = new Scanner(System.in);
     System.out.printf("Note id: ");
-    noteId = in.nextInt();
+    noteId = in.nextLine();
     System.out.printf("User id: ");
-    userId = in.nextInt();
+    userId = in.nextLine();
 
     return NotesRequest.newBuilder()
       .setType(NotesRequest.RequestType.DELETE)
@@ -130,12 +129,12 @@ public class InputHandler {
   }
 
   private static NotesRequest buildGetRequest() {
-    int noteId, userId;
+    String noteId, userId;
     Scanner in = new Scanner(System.in);
     System.out.printf("Note id: ");
-    noteId = in.nextInt();
+    noteId = in.nextLine();
     System.out.printf("User id: ");
-    userId = in.nextInt();
+    userId = in.nextLine();
 
     return NotesRequest.newBuilder()
       .setType(NotesRequest.RequestType.GET)
@@ -150,10 +149,10 @@ public class InputHandler {
   }
 
   private static NotesRequest buildGetAllRequest() {
-    int userId;
+    String userId;
     Scanner in = new Scanner(System.in);
     System.out.printf("User id: ");
-    userId = in.nextInt();
+    userId = in.nextLine();
 
     return NotesRequest.newBuilder()
       .setType(NotesRequest.RequestType.GET_ALL)

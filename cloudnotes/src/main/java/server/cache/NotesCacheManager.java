@@ -12,12 +12,12 @@ import cloudnotes.proto.NotesCollection;
 import cloudnotes.proto.UserId;
 
 public class NotesCacheManager implements NotesCacheInterface {
-  private HashMap<Integer, String> cache;
-  private int lastId;
+  private HashMap<String, String> cache;
+  private IdManager idManager;
 
   public NotesCacheManager() {
-    cache = new HashMap<Integer, String>();
-    lastId = 0;
+    cache = new HashMap<String, String>();
+    idManager = new IdManager();
   }
 
   public boolean has(NoteId id) {
@@ -65,7 +65,7 @@ public class NotesCacheManager implements NotesCacheInterface {
   }
 
   private NoteId getNewId() {
-    return NoteId.newBuilder().setValue(lastId++).build();
+    return NoteId.newBuilder().setValue(idManager.create()).build();
   }
 
   private String toJson(Note entry) {

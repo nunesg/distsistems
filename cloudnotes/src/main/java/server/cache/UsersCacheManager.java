@@ -10,12 +10,12 @@ import java.util.HashMap;
 import com.google.protobuf.util.JsonFormat;
 
 public class UsersCacheManager implements UsersCacheInterface {
-  private HashMap<Integer, String> cache;
-  private int nextId;
+  private HashMap<String, String> cache;
+  private IdManager idManager;
 
   public UsersCacheManager() {
-    cache = new HashMap<Integer, String>();
-    nextId = 0;
+    cache = new HashMap<String, String>();
+    idManager = new IdManager();
   }
 
   public boolean has(UserId id) {
@@ -25,7 +25,7 @@ public class UsersCacheManager implements UsersCacheInterface {
   public UserId create(User user) {
     System.out.println("Create user on cacheManager!");
     user = user.toBuilder()
-        .setId(getId())
+        .setId(getNewId())
         .build();
     System.out.println("Users cache manager create user! JSON: " + toJson(user));
     cache.put(user.getId().getValue(), toJson(user));
@@ -56,8 +56,8 @@ public class UsersCacheManager implements UsersCacheInterface {
     return builder.build();
   }
 
-  private UserId getId() {
-    return UserId.newBuilder().setValue(nextId++).build();
+  private UserId getNewId() {
+    return UserId.newBuilder().setValue(idManager.create()).build();
   }
 
   private String toJson(User user) {

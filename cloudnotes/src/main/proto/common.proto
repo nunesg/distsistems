@@ -14,11 +14,13 @@ message CommonMessage {
 
 message OperationStatus {
   enum StatusType {
-    FAILED = 0;
-    SUCCESS = 1;
+    UNKNOWN = 0;
+    FAILED = 1;
+    SUCCESS = 2;
   }
   StatusType type = 1;
   UserId userId = 2;
+  string message = 3;
 }
 
 message UserData {
@@ -26,7 +28,7 @@ message UserData {
 }
 
 message UserId {
-  int32 value = 1;
+  string value = 1; // BigInteger
 }
 
 message User {

@@ -56,7 +56,6 @@ public class Admin {
   }
 
   private OperationStatus createUser() {
-    int userId;
     String userName;
     Scanner in = new Scanner(System.in);
     System.out.printf("User name: ");
@@ -72,11 +71,10 @@ public class Admin {
   }
 
   private OperationStatus updateUser() {
-    int userId;
-    String userName;
+    String userName, userId;
     Scanner in = new Scanner(System.in);
     System.out.printf("User id: ");
-    userId = in.nextInt();
+    userId = in.nextLine();
     System.out.printf("User name: ");
     in.nextLine();
     userName = in.nextLine();
@@ -95,10 +93,10 @@ public class Admin {
   }
 
   private OperationStatus deleteUser() {
-    int userId;
+    String userId;
     Scanner in = new Scanner(System.in);
     System.out.printf("User id: ");
-    userId = in.nextInt();
+    userId = in.nextLine();
 
     return blockingStub.deleteUser(
         UserId.newBuilder()
@@ -107,10 +105,10 @@ public class Admin {
   }
 
   private OperationStatus getUser() {
-    int noteId, userId;
+    String userId;
     Scanner in = new Scanner(System.in);
     System.out.printf("User id: ");
-    userId = in.nextInt();
+    userId = in.nextLine();
 
     UserResponse res = blockingStub.getUser(
       UserId.newBuilder().setValue(userId).build());

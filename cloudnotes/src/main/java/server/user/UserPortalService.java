@@ -67,14 +67,14 @@ public class UserPortalService {
     try {
       request = request.toBuilder().setSender(publisher.getId()).build();
       if (!userAuthenticated(request.getNote().getUserId())) {
-        throw new Exception("invalid user.");
+        throw new Exception("Invalid user");
       }
       cacheNotes.create(request);
       markAsSuccess(builder);
       
       publisher.publish(Topics.CREATE_NOTE, request.toByteArray());
     } catch (Exception e) {
-      markAsFailure(builder);
+      markAsFailure(builder, e.getMessage());
     }
     return builder.build();
   }
@@ -88,14 +88,14 @@ public class UserPortalService {
       request = request.toBuilder().setSender(publisher.getId()).build();
       if (!userAuthenticated(request.getNote().getUserId()) || 
           !hasNote(request.getNote().getId())) {
-        throw new Exception("invalid user or note id");
+        throw new Exception("Invalid user or note id");
       }
       cacheNotes.update(request);
       markAsSuccess(builder);
       
       publisher.publish(Topics.UPDATE_NOTE, request.toByteArray());
     } catch (Exception e) {
-      markAsFailure(builder);
+      markAsFailure(builder, e.getMessage());
     }
     return builder.build();
   }
@@ -109,14 +109,14 @@ public class UserPortalService {
       request = request.toBuilder().setSender(publisher.getId()).build();
       if (!userAuthenticated(request.getNote().getUserId()) || 
           !hasNote(request.getNote().getId())) {
-        throw new Exception("invalid user or noteId");
+        throw new Exception("Invalid user or noteId");
       }
       cacheNotes.delete(request);
       markAsSuccess(builder);
       
       publisher.publish(Topics.DELETE_NOTE, request.toByteArray());
     } catch (Exception e) {
-      markAsFailure(builder);
+      markAsFailure(builder, e.getMessage());
     }
     return builder.build();
   }
@@ -128,7 +128,7 @@ public class UserPortalService {
 
     if (!userAuthenticated(request.getNote().getUserId()) || 
         !hasNote(request.getNote().getId())) {
-      markAsFailure(builder);
+      markAsFailure(builder, "Invalid user or noteId");
       return builder.build();
     }
     markAsSuccess(builder);
@@ -141,7 +141,7 @@ public class UserPortalService {
     NotesResponse.Builder builder = NotesResponse.newBuilder()
       .setType(request.getType());
     if (!userAuthenticated(request.getNote().getUserId())) {
-      markAsFailure(builder);
+      markAsFailure(builder, "Invalid user");
       return builder.build();
     }
     markAsSuccess(builder);
@@ -204,10 +204,11 @@ public class UserPortalService {
         .build());
   }
 
-  private void markAsFailure(NotesResponse.Builder builder) {
+  private void markAsFailure(NotesResponse.Builder builder, String msg) {
     builder.setStatus(
       OperationStatus.newBuilder()
         .setType(OperationStatus.StatusType.FAILED)
+        .setMessage(msg)
         .build());
   }
 }
