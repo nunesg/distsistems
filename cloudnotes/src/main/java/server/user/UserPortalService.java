@@ -15,7 +15,7 @@ import cloudnotes.server.NotesCacheInterface;
 import cloudnotes.server.mosquitto.Listener;
 import cloudnotes.server.mosquitto.Publisher;
 
-public class UserRequestHandler {
+public class UserPortalService {
   private static final String CREATE_NOTE_TOPIC = "user/create/note";
   private static final String UPDATE_NOTE_TOPIC = "user/update/note";
   private static final String DELETE_NOTE_TOPIC = "user/delete/note";
@@ -23,7 +23,7 @@ public class UserRequestHandler {
   private final Publisher publisher;
   private final Listener listener;
 
-  public UserRequestHandler(NotesCacheInterface cacheManager) {
+  public UserPortalService(NotesCacheInterface cacheManager) {
     this.cacheManager = cacheManager;
     String id = LocalTime.now().toString();
     publisher = new Publisher("userPublisher#" + id);

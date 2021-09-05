@@ -10,7 +10,7 @@ import cloudnotes.server.NotesCacheManager;
 
 public class UserPortalServer {
   public static void main(String args[]) {
-    UserRequestHandler requestHandler = new UserRequestHandler(new NotesCacheManager());
+    UserPortalService service = new UserPortalService(new NotesCacheManager());
     int port = new Scanner(args[1]).nextInt();
 
     try {
@@ -24,7 +24,7 @@ public class UserPortalServer {
           System.out.println("Client connected on port " + port + "!");
           NotesRequest req = NotesRequest.parseDelimitedFrom(client.getInputStream());
           if (req != null) {
-            requestHandler.handle(req).writeDelimitedTo(client.getOutputStream());
+            service.handle(req).writeDelimitedTo(client.getOutputStream());
           } else {
             throw new Exception("NotesRequest cannot be null!");
           }
