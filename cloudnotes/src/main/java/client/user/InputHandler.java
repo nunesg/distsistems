@@ -66,14 +66,15 @@ public class InputHandler {
     return NotesRequest.newBuilder()
       .setType(NotesRequest.RequestType.CREATE)
       .setNote(
-        Note.newBuilder().setContent(
-          NoteContent.newBuilder()
-            .setTitle(title)
-            .setBody(body)
-            .build())
-        .build())
-      .setUserId(
-        UserId.newBuilder().setValue(userId).build())
+        Note.newBuilder()
+          .setContent(
+            NoteContent.newBuilder()
+              .setTitle(title)
+              .setBody(body)
+              .build())
+          .setUserId(
+            UserId.newBuilder().setValue(userId).build())
+          .build())
       .build();
 
   }
@@ -102,9 +103,9 @@ public class InputHandler {
               .build())
           .setId(
             NoteId.newBuilder().setValue(noteId).build())
+          .setUserId(
+            UserId.newBuilder().setValue(userId).build())
           .build())
-      .setUserId(
-        UserId.newBuilder().setValue(userId).build())
       .build();
   }
 
@@ -122,9 +123,9 @@ public class InputHandler {
         Note.newBuilder()
           .setId(
             NoteId.newBuilder().setValue(noteId).build())
+          .setUserId(
+            UserId.newBuilder().setValue(userId).build())
           .build())
-      .setUserId(
-        UserId.newBuilder().setValue(userId).build())
       .build();
   }
 
@@ -142,9 +143,9 @@ public class InputHandler {
         Note.newBuilder()
           .setId(
             NoteId.newBuilder().setValue(noteId).build())
+          .setUserId(
+            UserId.newBuilder().setValue(userId).build())
           .build())
-      .setUserId(
-        UserId.newBuilder().setValue(userId).build())
       .build();
   }
 
@@ -156,8 +157,11 @@ public class InputHandler {
 
     return NotesRequest.newBuilder()
       .setType(NotesRequest.RequestType.GET_ALL)
-      .setUserId(
-        UserId.newBuilder().setValue(userId).build())
+      .setNote(
+        Note.newBuilder()
+          .setUserId(
+            UserId.newBuilder().setValue(userId).build())
+          .build())
       .build();
   }
 }
