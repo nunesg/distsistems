@@ -41,22 +41,22 @@ First, start mosquitto broker on port `2222` running:
 - `mosquitto -p 2222` on a terminal.
 
 On the terminal, run:
-- `./build/install/cloudnotes/bin/user-server` to start the `UserPortal` application.
+- `./build/install/cloudnotes/bin/user-server -p <server_port>` to start the `UserPortal` application running on port `<server_port>`.
 - `./build/install/cloudnotes/bin/admin-server -p <server_port>` to start the `AdminPortal` application running on port `<server_port>`.
 
 ## Client
 After setting up the servers, open another terminal and run:
-- `./build/install/cloudnotes/bin/user-client` to start the `UserApp` application.
+- `./build/install/cloudnotes/bin/user-client -p <server_port>` to start the `UserApp` application, which will communicate with server running on port `<server_port>`.
 - `./build/install/cloudnotes/bin/admin-client -p <server_port>` to start the `AdminApp` application, which will communicate with server running on port `<server_port>`.
 
 The applications on client side (`UserApp` and `AdminApp`) should print on the screen the message received from the respective server.
 
 ## Workflow
 
-1. Run a query on `AdminApp` to create a user (keep ID of the user you've just created)
+1. Run a query on `AdminApp` to create a user (keep the ID of the user you've just created)
 2. Run queries on `UserApp` to manage notes from the user you've just created
 
-See you can only manage notes from already existing users, and you can't update a user (or note) that doesn't exist yet.
+Keep in mind that you can only manage notes from already existing users, and you can't update a user (or note) that doesn't exist yet.
 
 # Data scheme
 
