@@ -27,8 +27,6 @@ public class UserPortalServer {
           NotesRequest req = NotesRequest.parseDelimitedFrom(client.getInputStream());
           if (req != null) {
             service.handle(req).writeDelimitedTo(client.getOutputStream());
-          } else {
-            throw new Exception("NotesRequest cannot be null!");
           }
           client.close();
         }

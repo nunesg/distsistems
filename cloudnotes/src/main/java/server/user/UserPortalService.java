@@ -54,6 +54,7 @@ public class UserPortalService {
           .setStatus(
             OperationStatus.newBuilder()
               .setType(OperationStatus.StatusType.FAILED)
+              .setMessage("Invalid request type")
               .build())
           .build();
     }
