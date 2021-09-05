@@ -10,6 +10,7 @@ import cloudnotes.proto.OperationStatus;
 import cloudnotes.proto.User;
 import cloudnotes.proto.UserData;
 import cloudnotes.proto.UserId;
+import cloudnotes.proto.UserResponse;
 import cloudnotes.proto.UsersCollection;
 import cloudnotes.proto.EmptyMessage;
 
@@ -111,10 +112,10 @@ public class Admin {
     System.out.printf("User id: ");
     userId = in.nextInt();
 
-    User user = blockingStub.getUser(
+    UserResponse res = blockingStub.getUser(
       UserId.newBuilder().setValue(userId).build());
-    System.out.println("User retrieved: " + user.toString());
-    return OperationStatus.newBuilder().setType(OperationStatus.StatusType.SUCCESS).build();
+    System.out.println("User retrieved: " + res.toString());
+    return res.getStatus();
   }
 
   private OperationStatus getAllUsers() {

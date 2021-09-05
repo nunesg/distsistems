@@ -9,6 +9,7 @@ import cloudnotes.proto.User;
 import cloudnotes.proto.UserId;
 import cloudnotes.proto.UsersCollection;
 import cloudnotes.proto.UserRequest;
+import cloudnotes.proto.UserResponse;
 
 import cloudnotes.server.UsersCacheInterface;
 import cloudnotes.server.mosquitto.Listener;
@@ -64,6 +65,9 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
       OperationStatus.Builder builder = OperationStatus.newBuilder();
 
       try {
+        if (!hasUser(userRequest.getId())) {
+          throw new Exception("User doesn't exist");
+        }
         cacheManager.update(userRequest);
         markAsSuccess(builder);
         publisher.publish(
@@ -87,6 +91,9 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
       OperationStatus.Builder builder = OperationStatus.newBuilder();
 
       try {
+        if (!hasUser(userIdRequest)) {
+          throw new Exception("User doesn't exist");
+        }
         cacheManager.delete(userIdRequest);
         markAsSuccess(builder);
         publisher.publish(
@@ -105,9 +112,22 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
     }
     
     @Override
-    public void getUser(UserId userIdRequest, StreamObserver<User> responseObserver) {
+    public void getUser(UserId userIdRequest, StreamObserver<UserResponse> responseObserver) {
       System.out.println("getUser request");
-      responseObserver.onNext(cacheManager.get(userIdRequest));
+      UserResponse.Builder builder = UserResponse.newBuilder();
+      OperationStatus.Builder statusBuilder = OperationStatus.newBuilder();
+
+      if (!hasUser(userIdRequest)) {
+        markAsFailure(statusBuilder);
+        responseObserver.onNext(builder.setStatus(statusBuilder.build()).build());
+      } else {
+        markAsSuccess(statusBuilder);
+        responseObserver.onNext(
+          builder
+            .setStatus(statusBuilder.build())
+            .setUser(cacheManager.get(userIdRequest))
+            .build());
+      }
       responseObserver.onCompleted();
     }
     
@@ -137,6 +157,10 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
         }
         cacheManager.delete(UserRequest.parseFrom(payload).getUser().getId());
       });
+    }
+
+    private boolean hasUser(UserId id) {
+      return cacheManager.has(id);
     }
 
     private String getSenderFromPayload(byte[] payload) throws Exception {

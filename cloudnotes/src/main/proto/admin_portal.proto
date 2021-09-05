@@ -14,7 +14,7 @@ service AdminPortal {
   rpc createUser (User) returns (OperationStatus) {}
   rpc updateUser (User) returns (OperationStatus) {}
   
-  rpc getUser (UserId) returns (User) {}
+  rpc getUser (UserId) returns (UserResponse) {}
   rpc getAllUsers (EmptyMessage) returns (UsersCollection) {}
   
   rpc deleteUser (UserId) returns (OperationStatus) {}
@@ -23,4 +23,9 @@ service AdminPortal {
 message UserRequest {
   User user = 1;
   string sender = 2;
+}
+
+message UserResponse {
+  User user = 1;
+  OperationStatus status = 2;
 }
