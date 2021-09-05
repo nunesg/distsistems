@@ -32,7 +32,7 @@ public class Admin {
     System.out.println("Type the desired operation:\n0- createUser\n1- update user\n2- delete user\n3- get user\n4- get all users");
     int val = in.nextInt();
     OperationStatus status = handleOperation(val);
-    System.out.println("Request status: " + status.getType().getValueDescriptor().getName());
+    System.out.println("Request result: " + status.toString());
   }
 
   // change to get an enum instead of int

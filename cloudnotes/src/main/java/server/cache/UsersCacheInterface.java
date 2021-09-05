@@ -5,7 +5,7 @@ import cloudnotes.proto.UserId;
 import cloudnotes.proto.UsersCollection;
 
 public interface UsersCacheInterface {
-  public void create(User user);
+  public UserId create(User user);
   
   public void update(User user);
   

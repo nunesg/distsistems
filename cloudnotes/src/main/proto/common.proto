@@ -14,8 +14,8 @@ message CommonMessage {
 
 message OperationStatus {
   enum StatusType {
-    SUCCESS = 0;
-    FAILED = 1;
+    FAILED = 0;
+    SUCCESS = 1;
   }
   StatusType type = 1;
   UserId userId = 2;

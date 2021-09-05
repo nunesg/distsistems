@@ -8,6 +8,7 @@ import cloudnotes.proto.OperationStatus;
 import cloudnotes.proto.User;
 import cloudnotes.proto.UserId;
 import cloudnotes.proto.UsersCollection;
+import cloudnotes.proto.UserRequest;
 
 import cloudnotes.server.UsersCacheInterface;
 import cloudnotes.server.mosquitto.Listener;
@@ -20,14 +21,12 @@ import java.time.LocalTime;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
-    private final UserIdManager userIdManager;
     private final UsersCacheInterface cacheManager;
     private Publisher publisher;
     private Listener listener;
 
     AdminPortalService(UsersCacheInterface cacheManager) {
       super();
-      this.userIdManager = new UserIdManager();
       this.cacheManager = cacheManager;
       String id = LocalTime.now().toString();
       publisher = new Publisher("adminPublisher#" + id);
@@ -36,42 +35,72 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
     }
 
     @Override
-    public void getValidId(EmptyMessage emptyRequest, StreamObserver<UserId> responseObserver) {
-      System.out.println("getValidId request");
-      responseObserver.onNext(userIdManager.createId());
-      responseObserver.onCompleted();
-    }
-
-    @Override
     public void createUser(User userRequest, StreamObserver<OperationStatus> responseObserver) {
       System.out.println("createUser request");
-      publisher.publish(Topics.CREATE_USER, userRequest.toByteArray());
-      responseObserver.onNext(
-        OperationStatus.newBuilder()
-          .setType(OperationStatus.StatusType.SUCCESS)
-          .build());
+      OperationStatus.Builder builder = OperationStatus.newBuilder();
+
+      try {
+        builder.setUserId(cacheManager.create(userRequest));
+        markAsSuccess(builder);
+        publisher.publish(
+          Topics.CREATE_USER, 
+          UserRequest.newBuilder()
+            .setUser(userRequest)
+            .setSender(publisher.getId())
+            .build()
+            .toByteArray());
+
+      } catch (Exception e) {
+        markAsFailure(builder);
+      }
+      responseObserver.onNext(builder.build());
       responseObserver.onCompleted();
     }
 
     @Override
     public void updateUser(User userRequest, StreamObserver<OperationStatus> responseObserver) {
       System.out.println("updateUser request");
-      publisher.publish(Topics.UPDATE_USER, userRequest.toByteArray());
-      OperationStatus status = OperationStatus.newBuilder()
-        .setType(OperationStatus.StatusType.SUCCESS)
-        .build();
-      responseObserver.onNext(status);
+
+      OperationStatus.Builder builder = OperationStatus.newBuilder();
+
+      try {
+        cacheManager.update(userRequest);
+        markAsSuccess(builder);
+        publisher.publish(
+          Topics.UPDATE_USER, 
+          UserRequest.newBuilder()
+            .setUser(userRequest)
+            .setSender(publisher.getId())
+            .build()
+            .toByteArray());
+      } catch (Exception e) {
+        markAsFailure(builder);
+      }
+      responseObserver.onNext(builder.build());
       responseObserver.onCompleted();
     }
 
     @Override
     public void deleteUser(UserId userIdRequest, StreamObserver<OperationStatus> responseObserver) {
       System.out.println("deleteUser request");
-      publisher.publish(Topics.DELETE_USER, userIdRequest.toByteArray());
-      responseObserver.onNext(
-        OperationStatus.newBuilder()
-          .setType(OperationStatus.StatusType.SUCCESS)
-          .build());
+      
+      OperationStatus.Builder builder = OperationStatus.newBuilder();
+
+      try {
+        cacheManager.delete(userIdRequest);
+        markAsSuccess(builder);
+        publisher.publish(
+          Topics.DELETE_USER, 
+          UserRequest.newBuilder()
+            .setUser(
+              User.newBuilder().setId(userIdRequest).build())
+            .setSender(publisher.getId())
+            .build()
+            .toByteArray());
+      } catch (Exception e) {
+        markAsFailure(builder);
+      }
+      responseObserver.onNext(builder.build());
       responseObserver.onCompleted();
     }
     
@@ -91,13 +120,34 @@ public class AdminPortalService extends AdminPortalGrpc.AdminPortalImplBase {
 
     private void subscribeToTopics() {
       listener.subscribe(Topics.CREATE_USER, (byte[] payload) -> {
-        cacheManager.create(User.parseFrom(payload));
+        if (getSenderFromPayload(payload).equals(publisher.getId())) {
+          return;
+        }
+        cacheManager.create(UserRequest.parseFrom(payload).getUser());
       });
       listener.subscribe(Topics.UPDATE_USER, (byte[] payload) -> {
-        cacheManager.update(User.parseFrom(payload));
+        if (getSenderFromPayload(payload).equals(publisher.getId())) {
+          return;
+        }
+        cacheManager.update(UserRequest.parseFrom(payload).getUser());
       });
       listener.subscribe(Topics.DELETE_USER, (byte[] payload) -> {
-        cacheManager.delete(UserId.parseFrom(payload));
+        if (getSenderFromPayload(payload).equals(publisher.getId())) {
+          return;
+        }
+        cacheManager.delete(UserRequest.parseFrom(payload).getUser().getId());
       });
+    }
+
+    private String getSenderFromPayload(byte[] payload) throws Exception {
+      return UserRequest.parseFrom(payload).getSender();
+    }
+
+    private void markAsFailure(OperationStatus.Builder builder) {
+      builder.setType(OperationStatus.StatusType.FAILED);
+    }
+
+    private void markAsSuccess(OperationStatus.Builder builder) {
+      builder.setType(OperationStatus.StatusType.SUCCESS);
     }
   }

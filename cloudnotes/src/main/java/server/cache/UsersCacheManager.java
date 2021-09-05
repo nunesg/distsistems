@@ -18,7 +18,7 @@ public class UsersCacheManager implements UsersCacheInterface {
     nextId = 0;
   }
 
-  public void create(User user) {
+  public UserId create(User user) {
     System.out.println("Create user on cacheManager!");
     user = user.toBuilder()
         .setId(getId())
@@ -26,6 +26,7 @@ public class UsersCacheManager implements UsersCacheInterface {
     System.out.println("Users cache manager create user! JSON: " + toJson(user));
     cache.put(user.getId().getValue(), toJson(user));
     System.out.println("get: " + cache.get(user.getId().getValue()));
+    return user.getId();
   }
   
   public void update(User user) {

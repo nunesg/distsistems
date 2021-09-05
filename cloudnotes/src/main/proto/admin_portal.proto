@@ -19,3 +19,8 @@ service AdminPortal {
   
   rpc deleteUser (UserId) returns (OperationStatus) {}
 }
+
+message UserRequest {
+  User user = 1;
+  string sender = 2;
+}
