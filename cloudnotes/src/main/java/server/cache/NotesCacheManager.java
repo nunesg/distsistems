@@ -31,9 +31,14 @@ public class NotesCacheManager implements NotesCacheInterface {
     return note.getId();
   }
   
-  public void update(NotesRequest notesRequest) {
+  public void update(NotesRequest notesRequest) throws Exception {
     System.out.println("Notes cache manager update note!");
-    cache.put(notesRequest.getNote().getId().getValue(), toJson(notesRequest.getNote()));
+    Note note = fromJson(cache.get(notesRequest.getNote().getId().getValue()));
+    if (note.getUserId().getValue().equals(notesRequest.getNote().getUserId().getValue())) {
+      cache.put(note.getId().getValue(), toJson(notesRequest.getNote()));
+      return;
+    }
+    throw new Exception("Note was not updated. This note does not belong to the given user.");
   }
   
   public void delete(NotesRequest notesRequest) throws Exception {
@@ -43,7 +48,7 @@ public class NotesCacheManager implements NotesCacheInterface {
       cache.remove(note.getId().getValue());
       return;
     }
-    throw new Exception("Note was not removed. UserId didn't match.");
+    throw new Exception("Note was not removed. UserId did not match.");
   }
   
   public Note get(NotesRequest notesRequest) {

@@ -10,7 +10,7 @@ public interface NotesCacheInterface {
 
   public NoteId create(NotesRequest notesRequest);
   
-  public void update(NotesRequest notesRequest);
+  public void update(NotesRequest notesRequest) throws Exception;
   
   public void delete(NotesRequest notesRequest) throws Exception;
   

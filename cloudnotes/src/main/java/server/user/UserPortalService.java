@@ -134,7 +134,7 @@ public class UserPortalService {
     }
     Note note = cacheNotes.get(request);
     if (!note.getId().getValue().equals(request.getNote().getUserId().getValue())) {
-      markAsFailure(builder, "This note doesn't belong to the given user");
+      markAsFailure(builder, "This note does not belong to the given user");
       return builder.build();
     }
     markAsSuccess(builder);
