@@ -59,38 +59,53 @@ public class UserPortalService {
 
   private NotesResponse handleCreateNote(NotesRequest request) {
     System.out.println("handleCreateNote()!");
-    publisher.publish(Topics.CREATE_NOTE, request.toByteArray());
-    return NotesResponse.newBuilder()
-        .setType(request.getType())
-        .setStatus(
-          OperationStatus.newBuilder()
-            .setType(OperationStatus.StatusType.SUCCESS)
-            .build())
-        .build();
+
+    NotesResponse.Builder builder = 
+      NotesResponse.newBuilder().setType(request.getType());
+    try {
+      request = request.toBuilder().setSender(publisher.getId()).build();
+      cacheNotes.create(request);
+      markAsSuccess(builder);
+      
+      publisher.publish(Topics.CREATE_NOTE, request.toByteArray());
+    } catch (Exception e) {
+      markAsFailure(builder);
+    }
+    return builder.build();
   }
   
   private NotesResponse handleUpdateNote(NotesRequest request) {
     System.out.println("handleUpdateNote()!");
-    publisher.publish(Topics.UPDATE_NOTE, request.toByteArray());
-    return NotesResponse.newBuilder()
-        .setType(request.getType())
-        .setStatus(
-          OperationStatus.newBuilder()
-            .setType(OperationStatus.StatusType.SUCCESS)
-            .build())
-        .build();
+
+    NotesResponse.Builder builder = 
+      NotesResponse.newBuilder().setType(request.getType());
+    try {
+      request = request.toBuilder().setSender(publisher.getId()).build();
+      cacheNotes.update(request);
+      markAsSuccess(builder);
+      
+      publisher.publish(Topics.UPDATE_NOTE, request.toByteArray());
+    } catch (Exception e) {
+      markAsFailure(builder);
+    }
+    return builder.build();
   }
   
   private NotesResponse handleDeleteNote(NotesRequest request) {
     System.out.println("handleDeleteNote()!");
-    publisher.publish(Topics.DELETE_NOTE, request.toByteArray());
-    return NotesResponse.newBuilder()
-        .setType(request.getType())
-        .setStatus(
-          OperationStatus.newBuilder()
-            .setType(OperationStatus.StatusType.SUCCESS)
-            .build())
-        .build();
+
+    NotesResponse.Builder builder = 
+      NotesResponse.newBuilder().setType(request.getType());
+    try {
+      request = request.toBuilder().setSender(publisher.getId()).build();
+      cacheNotes.delete(request);
+      markAsSuccess(builder);
+      
+      publisher.publish(Topics.DELETE_NOTE, request.toByteArray());
+    } catch (Exception e) {
+      markAsFailure(builder);
+    }
+    return builder.build();
   }
   
   private NotesResponse handleGetNote(NotesRequest request) {
@@ -125,12 +140,21 @@ public class UserPortalService {
 
   private void subscribeToTopics() {
     listener.subscribe(Topics.CREATE_NOTE, (byte[] payload) -> {
+      if (getSenderFromPayload(payload).equals(publisher.getId())) {
+        return;
+      }
       cacheNotes.create(NotesRequest.parseFrom(payload));
     });
     listener.subscribe(Topics.UPDATE_NOTE, (byte[] payload) -> {
+      if (getSenderFromPayload(payload).equals(publisher.getId())) {
+        return;
+      }
       cacheNotes.update(NotesRequest.parseFrom(payload));
     });
     listener.subscribe(Topics.DELETE_NOTE, (byte[] payload) -> {
+      if (getSenderFromPayload(payload).equals(publisher.getId())) {
+        return;
+      }
       cacheNotes.delete(NotesRequest.parseFrom(payload));
     });
     listener.subscribe(Topics.CREATE_USER, (byte[] payload) -> {
@@ -142,5 +166,23 @@ public class UserPortalService {
     listener.subscribe(Topics.DELETE_USER, (byte[] payload) -> {
       cacheUsers.delete(UserId.parseFrom(payload));
     });
+  }
+
+  private String getSenderFromPayload(byte[] payload) throws Exception {
+    return NotesRequest.parseFrom(payload).getSender();
+  }
+
+  private void markAsSuccess(NotesResponse.Builder builder) {
+    builder.setStatus(
+      OperationStatus.newBuilder()
+        .setType(OperationStatus.StatusType.SUCCESS)
+        .build());
+  }
+
+  private void markAsFailure(NotesResponse.Builder builder) {
+    builder.setStatus(
+      OperationStatus.newBuilder()
+        .setType(OperationStatus.StatusType.FAILED)
+        .build());
   }
 }

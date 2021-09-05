@@ -58,6 +58,10 @@ public class Listener implements MqttCallback {
     }
   }
 
+  public String getId() {
+    return clientId;
+  }
+
 	public void subscribe(String topic, ListenerCallback callback) {
     System.out.println("Subscribing to topic: " + topic);
 		try {

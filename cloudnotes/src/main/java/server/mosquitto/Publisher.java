@@ -42,6 +42,10 @@ public class Publisher implements AutoCloseable {
     }
   }
 
+  public String getId() {
+    return clientId;
+  }
+
   public void publish(String topic, byte[] message) {
     publish(topic, message, 2);
   }

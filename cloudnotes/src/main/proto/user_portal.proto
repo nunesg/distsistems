@@ -19,6 +19,7 @@ message NotesRequest {
   }
   RequestType type = 1;
   Note note = 2; // used by GET, DELETE, CREATE and UPDATE
+  string sender = 3;
 }
 
 message NotesResponse {
