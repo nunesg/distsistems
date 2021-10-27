@@ -94,6 +94,13 @@ task userServer(type: CreateStartScripts) {
     classpath = startScripts.classpath
 }
 
+task ratisTest(type: CreateStartScripts) {
+    mainClassName = 'cloudnotes.server.RatisTest'
+    applicationName = 'ratis-test'
+    outputDir = new File(project.buildDir, 'tmp')
+    classpath = startScripts.classpath
+}
+
 task mqttListener(type: CreateStartScripts) {
     mainClassName = 'cloudnotes.server.mosquitto.Listener'
     applicationName = 'mqtt-listener'
@@ -115,5 +122,6 @@ applicationDistribution.into('bin') {
     from(userClient)
     from(mqttPublisher)
     from(mqttListener)
+    from(ratisTest)
     fileMode = 0755
 }
