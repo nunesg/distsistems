@@ -74,10 +74,10 @@ public class Client
                         BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                         System.out.println("Client connected on port " + port + "!");
                         
-                        String req = in.readLine();
+                        String req = readInput(in);
                         System.out.println("req: " + req);
                         if (req != null) {
-                            out.println(serve(req.split(" "), client));
+                            out.println(serve(req.split("\\|"), client));
                         }
                         clientSocket.close();
                     }
@@ -103,12 +103,12 @@ public class Client
         System.out.println("args: " + Arrays.toString(args));
         switch (args[0]){
             case "add":
-                getValue = client.io().send(Message.valueOf("add:" + args[1] + ":" + args[2]));
+                getValue = client.io().send(Message.valueOf("add|" + args[1] + "|" + args[2]));
                 response = getValue.getMessage().getContent().toString(Charset.defaultCharset());
                 System.out.println("Resposta: " + response);
                 return response;
             case "get":
-                getValue = client.io().sendReadOnly(Message.valueOf("get:" + args[1]));
+                getValue = client.io().sendReadOnly(Message.valueOf("get|" + args[1]));
                 response = getValue.getMessage().getContent().toString(Charset.defaultCharset());
                 System.out.println("Resposta: " + response);
                 return response;
@@ -118,7 +118,7 @@ public class Client
                 System.out.println("Resposta: " + response);
                 return response;
             case "remove":
-                getValue = client.io().send(Message.valueOf("remove:" + args[1]));
+                getValue = client.io().send(Message.valueOf("remove|" + args[1]));
                 response = getValue.getMessage().getContent().toString(Charset.defaultCharset());
                 System.out.println("Resposta: " + response);
                 return response;
@@ -139,4 +139,14 @@ public class Client
         }
     }
 
+    private static String readInput(BufferedReader in) {
+        try {
+            char[] buffer = new char[1024];
+            in.read(buffer, 0, 1024);
+            return new String(buffer);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }
