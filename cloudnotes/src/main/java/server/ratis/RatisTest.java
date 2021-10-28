@@ -15,7 +15,9 @@ import cloudnotes.server.UsersCacheManager;
 
 public class RatisTest {
   public static void main(String args[]) throws Exception {
-    Socket server = new Socket("localhost", 23456);
+    ConfigFacade config = ConfigFacade.getInstance();
+      
+    Socket server = new Socket(config.getClient().getIp(), config.getClient().getPort());
     PrintWriter out = new PrintWriter(server.getOutputStream(), true);
     BufferedReader in = new BufferedReader(new InputStreamReader(server.getInputStream()));
 
