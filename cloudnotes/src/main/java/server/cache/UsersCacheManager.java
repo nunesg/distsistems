@@ -16,12 +16,13 @@ public class UsersCacheManager implements UsersCacheInterface {
 
   public UsersCacheManager() {
     cache = new HashMap<String, String>();
-    idManager = new IdManager();
     db = RatisFacade.getInstance();
+    idManager = new IdManager(db, "users");
   }
 
   public boolean has(UserId id) {
-    return cache.containsKey(id.getValue());
+    String dbResult = db.get(id.getValue());
+    return !dbResult.equals("null");
   }
 
   public UserId create(User user) {
@@ -64,7 +65,10 @@ public class UsersCacheManager implements UsersCacheInterface {
     System.out.println("Users cache manager getAll!");
     UsersCollection.Builder builder = UsersCollection.newBuilder();
     // cache.forEach((k, v) -> builder.addValues(fromJson(v)));
-    db.getAll().forEach((k, v) -> builder.addValues(fromJson(v)));
+    db.getAll().forEach((k, v) -> {
+      User user = fromJson(v);
+      if(user.hasId()) builder.addValues(user);
+    });
     return builder.build();
   }
 

@@ -14,6 +14,7 @@ import java.net.Socket;
 import java.net.ServerSocket;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
@@ -71,7 +72,7 @@ public class Client
                     while (true) {
                         Socket clientSocket = serverSocket.accept();
                         PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                        BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                        Scanner in = new Scanner(new InputStreamReader(clientSocket.getInputStream())).useDelimiter("");
                         System.out.println("Client connected on port " + port + "!");
                         
                         String req = readInput(in);
@@ -139,11 +140,19 @@ public class Client
         }
     }
 
-    private static String readInput(BufferedReader in) {
+    private static String readInput(Scanner in) {
         try {
-            char[] buffer = new char[1024];
-            in.read(buffer, 0, 1024);
-            return new String(buffer);
+            StringBuffer buffer = new StringBuffer();
+            char c;
+            while(in.hasNext()) {
+                c = in.next().charAt(0);
+                System.out.println("c = " + c);
+                if (c == '&') break;
+                buffer.append(c);
+            }
+            String str = buffer.toString();
+            System.out.println("str read is <" + str + ">");
+            return str;
         } catch (Exception e) {
             e.printStackTrace();
         }

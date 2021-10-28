@@ -18,12 +18,13 @@ public class NotesCacheManager implements NotesCacheInterface {
 
   public NotesCacheManager() {
     cache = new HashMap<String, String>();
-    idManager = new IdManager();
     db = RatisFacade.getInstance();
+    idManager = new IdManager(db, "notes");
   }
 
   public boolean has(NoteId id) {
-    return cache.containsKey(id.getValue());
+    String dbResult = db.get(id.getValue());
+    return !dbResult.equals("null");
   }
 
   public NoteId create(NotesRequest notesRequest) {
@@ -83,7 +84,7 @@ public class NotesCacheManager implements NotesCacheInterface {
   }
 
   private NoteId getNewId() {
-    return NoteId.newBuilder().setValue(idManager.create()).build();
+    return NoteId.newBuilder().setValue("note_" + idManager.create()).build();
   }
 
   private String toJson(Note entry) {

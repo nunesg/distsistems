@@ -20,7 +20,7 @@ public class RatisFacade {
   private static RatisFacade instance;
   private Socket server;
   private PrintWriter out;
-  private BufferedReader in;
+  private Scanner in;
 
   private RatisFacade() {}
   
@@ -29,7 +29,7 @@ public class RatisFacade {
       ConfigFacade config = ConfigFacade.getInstance();
       server = new Socket(config.getClient().getIp(), config.getClient().getPort());
       out = new PrintWriter(server.getOutputStream(), true);
-      in = new BufferedReader(new InputStreamReader(server.getInputStream()));
+      in = new Scanner(new InputStreamReader(server.getInputStream()));
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -46,7 +46,7 @@ public class RatisFacade {
     setup();
     String res = null;
     try{
-      out.println("add|" + key + "|" + val);
+      out.println("add|" + key + "|" + val + "&");
       res = readInput();
       System.out.println(res);
     } catch (Exception e) {
@@ -60,7 +60,7 @@ public class RatisFacade {
     setup();
     String res;
     try{
-      out.println("remove|" + key + "|");
+      out.println("remove|" + key + "|&");
       res = readInput();
       System.out.println(res);
       close();
@@ -77,10 +77,9 @@ public class RatisFacade {
     String[] res;
     String line;
     try {
-      out.println("get|" + key + "|");
-
+      out.println("get|" + key + "|&");
       res = readInput().split("\\|");
-      System.out.println(res[1]);
+      System.out.println(res);
       close();
       return res[1];
     } catch (Exception e) {
@@ -94,7 +93,7 @@ public class RatisFacade {
     setup();
     Map<String, String> res;
     try{
-      out.println("getall" + "|");
+      out.println("getall" + "|&");
       String mapAsString = readInput();
       System.out.println("map: " + mapAsString);
       res = Arrays.stream(mapAsString.split("\\|"))
@@ -121,9 +120,16 @@ public class RatisFacade {
 
   private String readInput() {
     try {
-        char[] buffer = new char[1024];
-        in.read(buffer, 0, 1024);
-        return new String(buffer);
+        StringBuffer buffer = new StringBuffer();
+        String s;
+        while(in.hasNextLine()) {
+          s = in.nextLine();
+          System.out.println("s = " + s);
+          buffer.append(s);
+        }
+        String str = buffer.toString();
+        System.out.println("str read is <" + str + ">");
+        return str;
     } catch (Exception e) {
         e.printStackTrace();
     }

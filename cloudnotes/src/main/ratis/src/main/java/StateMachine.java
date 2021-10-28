@@ -77,6 +77,9 @@ public class StateMachine extends BaseStateMachine
     }
 
     private String add(String key, String val) {
+        if (val.endsWith("\n")) {
+            val = val.substring(val.length() - 1);
+        }
         key2values.put(key, val);
         return "add|" + key + "|success";
     }
