@@ -14,9 +14,4 @@ public class IdManager {
     nextId = nextId.add(BigInteger.ONE);
     return id;
   }
-
-  public boolean has(String id) {
-    BigInteger big = new BigInteger(id);
-    return big.compareTo(nextId) < 0 && big.compareTo(BigInteger.ZERO) > 0;
-  }
 }
