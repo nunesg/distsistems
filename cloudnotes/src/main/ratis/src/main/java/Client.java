@@ -112,17 +112,27 @@ public class Client
                 response = getValue.getMessage().getContent().toString(Charset.defaultCharset());
                 System.out.println("Resposta: " + response);
                 return response;
-            case "add_async":
-                compGetValue = client.async().send(Message.valueOf("add:" + args[1] + ":" + args[2]));
-                getValue = compGetValue.get();
+            case "getall":
+                getValue = client.io().sendReadOnly(Message.valueOf("getall"));
                 response = getValue.getMessage().getContent().toString(Charset.defaultCharset());
                 System.out.println("Resposta: " + response);
                 return response;
-            case "get_stale":
-                getValue = client.io().sendStaleRead(Message.valueOf("get:" + args[1]), 0, RaftPeerId.valueOf(args[2]));
+            case "remove":
+                getValue = client.io().send(Message.valueOf("remove:" + args[1]));
                 response = getValue.getMessage().getContent().toString(Charset.defaultCharset());
                 System.out.println("Resposta: " + response);
                 return response;
+            // case "add_async":
+            //     compGetValue = client.async().send(Message.valueOf("add:" + args[1] + ":" + args[2]));
+            //     getValue = compGetValue.get();
+            //     response = getValue.getMessage().getContent().toString(Charset.defaultCharset());
+            //     System.out.println("Resposta: " + response);
+            //     return response;
+            // case "get_stale":
+            //     getValue = client.io().sendStaleRead(Message.valueOf("get:" + args[1]), 0, RaftPeerId.valueOf(args[2]));
+            //     response = getValue.getMessage().getContent().toString(Charset.defaultCharset());
+            //     System.out.println("Resposta: " + response);
+            //     return response;
             default:
                 System.out.println("Comando inválido");
                 return "Invalid command";
