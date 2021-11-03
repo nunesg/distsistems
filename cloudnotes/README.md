@@ -44,6 +44,12 @@ On the terminal, run:
 - `./build/install/cloudnotes/bin/user-server -p <server_port>` to start the `UserPortal` application running on port `<server_port>`.
 - `./build/install/cloudnotes/bin/admin-server -p <server_port>` to start the `AdminPortal` application running on port `<server_port>`.
 
+### Ratis
+
+On folder `src/main/ratis` run:
+- `mvn package` to build the Ratis component server.
+- `java -cp target/RatisComponent-1.0-SNAPSHOT-jar-with-dependencies.jar Server <peer_id>` to run the server of one of the available peers in `src/main/resources/config.json`.
+
 ## Client
 After setting up the servers, open another terminal and run:
 - `./build/install/cloudnotes/bin/user-client -p <server_port>` to start the `UserApp` application, which will communicate with server running on port `<server_port>`.
